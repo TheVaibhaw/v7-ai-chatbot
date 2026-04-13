@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: V7 AI Chatbot
- * Plugin URI: https://vaibhawkumarparashar.in/v7-ai-chatbot
+ * Plugin URI: https://github.com/TheVaibhaw/v7-ai-chatbot
  * Description: AI-powered chatbot for WordPress sites. Provides intelligent customer support using your site content.
  * Version: 1.0.0
  * Author: Vaibhaw Kumar Parashar
