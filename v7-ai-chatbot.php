@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: V7 AI Chatbot
  * Plugin URI: https://vaibhawkumarparashar.in/v7-ai-chatbot
@@ -7,7 +6,7 @@
  * Version: 1.0.0
  * Author: Vaibhaw Kumar Parashar
  * Author URI: https://vaibhawkumarparashar.in
- * License: GPL v2 or later
+ * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: v7-ai-chatbot
  * Requires at least: 5.0
