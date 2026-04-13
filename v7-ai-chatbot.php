@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
 Plugin Name: V7 AI Chatbot
 Plugin URI: https://github.com/TheVaibhaw/v7-ai-chatbot
