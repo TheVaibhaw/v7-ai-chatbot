@@ -515,7 +515,7 @@ class V7_AI_Chatbot
             return new WP_Error('invalid_response', esc_html__('Invalid API response', 'v7-ai-chatbot'));
         }
 
-        return sanitize_text_field($body['choices'][0]['message']['content']);
+        return wp_kses_post($body['choices'][0]['message']['content']);
     }
 }
 
