@@ -13,7 +13,9 @@ Requires at least: 5.0
 Requires PHP: 7.4
 */
 
-if (!defined('ABSPATH')) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 define('V7_AI_CHATBOT_VERSION', '1.0.0');
 define('V7_AI_CHATBOT_PATH', plugin_dir_path(__FILE__));
