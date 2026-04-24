@@ -513,7 +513,7 @@ When reporting issues, include:
 ## Credits
 
 **Developer:** Vaibhaw Kumar Parashar  
-**Website:** [vaibhawkumarparashar.in](https://vaibhawkumarparashar.in)  
+**Website:** [vaibhawkumar.in](https://vaibhawkumar.in)  
 **License:** GPL v2 or later
 
 ---
