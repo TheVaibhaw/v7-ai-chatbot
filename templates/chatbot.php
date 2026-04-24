@@ -32,8 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
                 </svg>
             </button>
         </div>
-        <div id="v7-chatbot-footer">
-            <span>Powered by <a href="https://vaibhawkumarparashar.in" target="_blank" rel="noopener">V7</a></span>
-        </div>
+
     </div>
 </div>
