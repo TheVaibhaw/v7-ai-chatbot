@@ -5,7 +5,7 @@ Plugin URI: https://github.com/TheVaibhaw/v7-ai-chatbot
 Description: AI-powered chatbot for WordPress sites. Provides intelligent customer support using your site content.
 Version: 1.0.0
 Author: Vaibhaw Kumar Parashar
-Author URI: https://vaibhawkumarparashar.in
+Author URI: https://vaibhawkumar.in
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: v7-ai-chatbot
