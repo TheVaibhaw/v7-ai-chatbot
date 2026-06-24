@@ -100,10 +100,12 @@ Yes, all communications are secured with WordPress nonces and sanitized inputs. 
 * Responsive design
 * Admin settings panel
 
-== Upgrade Notice ==
+== Source Code ==
 
-= 1.0.0 =
-Initial release of V7 AI Chatbot.
+The source code for this plugin is fully open-source and human-readable. All JavaScript and CSS assets are included in their unminified, human-readable formats under the `assets/` directory.
+
+The repository and development source code are publicly hosted at:
+https://github.com/TheVaibhaw/v7-ai-chatbot
 
 == External services ==
 
