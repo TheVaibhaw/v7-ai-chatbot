@@ -41,8 +41,8 @@ class V7_AI_Chatbot
         add_action('wp_footer', [$this, 'render_chatbot']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin']);
-        add_action('wp_ajax_v7_chatbot_query', [$this, 'handle_query']);
-        add_action('wp_ajax_nopriv_v7_chatbot_query', [$this, 'handle_query']);
+        add_action('wp_ajax_v7_ai_chatbot_query', [$this, 'handle_query']);
+        add_action('wp_ajax_nopriv_v7_ai_chatbot_query', [$this, 'handle_query']);
         add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$this, 'settings_link']);
     }
 
@@ -59,7 +59,7 @@ class V7_AI_Chatbot
 
     public function register_settings()
     {
-        register_setting('v7_ai_chatbot', 'v7_ai_chatbot_settings', [$this, 'sanitize_settings']);
+        register_setting('v7_ai_chatbot_group', 'v7_ai_chatbot_settings', [$this, 'sanitize_settings']);
     }
 
     public function sanitize_settings($input)
@@ -92,10 +92,10 @@ class V7_AI_Chatbot
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
             <?php settings_errors('v7_ai_chatbot_settings'); ?>
             <form method="post" action="options.php">
-                <?php settings_fields('v7_ai_chatbot'); ?>
-                <div class="v7-settings-container">
-                    <div class="v7-settings-main">
-                        <div class="v7-card">
+                <?php settings_fields('v7_ai_chatbot_group'); ?>
+                <div class="v7-ai-chatbot-settings-container">
+                    <div class="v7-ai-chatbot-settings-main">
+                        <div class="v7-ai-chatbot-card">
                             <h2><?php esc_html_e('General Settings', 'v7-ai-chatbot'); ?></h2>
                             <table class="form-table">
                                 <tr>
@@ -124,18 +124,18 @@ class V7_AI_Chatbot
                             </table>
                         </div>
 
-                        <div class="v7-card">
+                        <div class="v7-ai-chatbot-card">
                             <h2><?php esc_html_e('AI Configuration', 'v7-ai-chatbot'); ?></h2>
                             <table class="form-table">
                                 <tr>
                                     <th><?php esc_html_e('API Provider', 'v7-ai-chatbot'); ?></th>
                                     <td>
-                                        <select name="v7_ai_chatbot_settings[api_provider]" id="v7-api-provider">
+                                        <select name="v7_ai_chatbot_settings[api_provider]" id="v7-ai-chatbot-api-provider">
                                             <option value="groq" <?php selected($settings['api_provider'], 'groq'); ?>>Groq (FREE)</option>
                                             <option value="gemini" <?php selected($settings['api_provider'], 'gemini'); ?>>Google Gemini (FREE)</option>
                                             <option value="openai" <?php selected($settings['api_provider'], 'openai'); ?>>OpenAI (Paid)</option>
                                         </select>
-                                        <p class="description" id="v7-api-help"></p>
+                                        <p class="description" id="v7-ai-chatbot-api-help"></p>
                                     </td>
                                 </tr>
                                 <tr>
@@ -145,21 +145,21 @@ class V7_AI_Chatbot
                                 <tr>
                                     <th><?php esc_html_e('Model', 'v7-ai-chatbot'); ?></th>
                                     <td>
-                                        <select name="v7_ai_chatbot_settings[model]" id="v7-model" class="regular-text">
-                                            <optgroup label="Groq Models" class="v7-models-groq">
+                                        <select name="v7_ai_chatbot_settings[model]" id="v7-ai-chatbot-model" class="regular-text">
+                                            <optgroup label="Groq Models" class="v7-ai-chatbot-models-groq">
                                                 <option value="llama-3.3-70b-versatile" <?php selected($settings['model'], 'llama-3.3-70b-versatile'); ?>>Llama 3.3 70B Versatile (Recommended)</option>
                                                 <option value="llama-3.1-8b-instant" <?php selected($settings['model'], 'llama-3.1-8b-instant'); ?>>Llama 3.1 8B Instant (Fast)</option>
                                                 <option value="llama-3.2-90b-vision-preview" <?php selected($settings['model'], 'llama-3.2-90b-vision-preview'); ?>>Llama 3.2 90B Vision</option>
                                                 <option value="mixtral-8x7b-32768" <?php selected($settings['model'], 'mixtral-8x7b-32768'); ?>>Mixtral 8x7B (32K context)</option>
                                                 <option value="gemma2-9b-it" <?php selected($settings['model'], 'gemma2-9b-it'); ?>>Gemma 2 9B</option>
                                             </optgroup>
-                                            <optgroup label="Google Gemini Models" class="v7-models-gemini">
+                                            <optgroup label="Google Gemini Models" class="v7-ai-chatbot-models-gemini">
                                                 <option value="gemini-1.5-flash" <?php selected($settings['model'], 'gemini-1.5-flash'); ?>>Gemini 1.5 Flash (Fast)</option>
                                                 <option value="gemini-1.5-flash-8b" <?php selected($settings['model'], 'gemini-1.5-flash-8b'); ?>>Gemini 1.5 Flash 8B (Fastest)</option>
                                                 <option value="gemini-1.5-pro" <?php selected($settings['model'], 'gemini-1.5-pro'); ?>>Gemini 1.5 Pro (Best Quality)</option>
                                                 <option value="gemini-2.0-flash-exp" <?php selected($settings['model'], 'gemini-2.0-flash-exp'); ?>>Gemini 2.0 Flash (Experimental)</option>
                                             </optgroup>
-                                            <optgroup label="OpenAI Models" class="v7-models-openai">
+                                            <optgroup label="OpenAI Models" class="v7-ai-chatbot-models-openai">
                                                 <option value="gpt-3.5-turbo" <?php selected($settings['model'], 'gpt-3.5-turbo'); ?>>GPT-3.5 Turbo (Budget)</option>
                                                 <option value="gpt-4" <?php selected($settings['model'], 'gpt-4'); ?>>GPT-4 (Powerful)</option>
                                                 <option value="gpt-4-turbo" <?php selected($settings['model'], 'gpt-4-turbo'); ?>>GPT-4 Turbo (Fast + Powerful)</option>
@@ -183,7 +183,7 @@ class V7_AI_Chatbot
                             </table>
                         </div>
 
-                        <div class="v7-card">
+                        <div class="v7-ai-chatbot-card">
                             <h2><?php esc_html_e('Content Sources', 'v7-ai-chatbot'); ?></h2>
                             <table class="form-table">
                                 <tr>
@@ -197,7 +197,7 @@ class V7_AI_Chatbot
                             </table>
                         </div>
 
-                        <div class="v7-card">
+                        <div class="v7-ai-chatbot-card">
                             <h2><?php esc_html_e('Appearance', 'v7-ai-chatbot'); ?></h2>
                             <table class="form-table">
                                 <tr>
@@ -218,17 +218,17 @@ class V7_AI_Chatbot
                         <?php submit_button(); ?>
                     </div>
 
-                    <div class="v7-settings-sidebar">
-                        <div class="v7-card">
+                    <div class="v7-ai-chatbot-settings-sidebar">
+                        <div class="v7-ai-chatbot-card">
                             <h3><?php esc_html_e('Quick Stats', 'v7-ai-chatbot'); ?></h3>
-                            <ul class="v7-stats">
+                            <ul class="v7-ai-chatbot-stats">
                                 <li><strong><?php echo esc_html($this->get_pages_count()); ?></strong> <?php esc_html_e('Pages', 'v7-ai-chatbot'); ?></li>
                                 <li><strong><?php echo esc_html($this->get_posts_count()); ?></strong> <?php esc_html_e('Posts', 'v7-ai-chatbot'); ?></li>
                                 <li><strong><?php echo esc_html($this->get_products_count()); ?></strong> <?php esc_html_e('Products', 'v7-ai-chatbot'); ?></li>
                             </ul>
                         </div>
 
-                        <div class="v7-card">
+                        <div class="v7-ai-chatbot-card">
                             <h3><?php esc_html_e('Get Free API Keys', 'v7-ai-chatbot'); ?></h3>
                             <ul style="margin:0;padding-left:20px">
                                 <li><strong>Groq (FREE):</strong><br><a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></li>
@@ -237,7 +237,7 @@ class V7_AI_Chatbot
                             </ul>
                         </div>
 
-                        <div class="v7-card">
+                        <div class="v7-ai-chatbot-card">
                             <h3><?php esc_html_e('Instructions', 'v7-ai-chatbot'); ?></h3>
                             <ol>
                                 <li><?php esc_html_e('Choose API provider', 'v7-ai-chatbot'); ?></li>
@@ -298,20 +298,20 @@ class V7_AI_Chatbot
         if ('toplevel_page_v7-ai-chatbot' !== $hook) return;
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('wp-color-picker');
-        wp_add_inline_style('wp-admin', '.v7-ai-chatbot-admin .v7-settings-container{display:grid;grid-template-columns:1fr 300px;gap:20px}.v7-ai-chatbot-admin .v7-card{background:#fff;border:1px solid #ccd0d4;box-shadow:0 1px 1px rgba(0,0,0,.04);padding:20px;margin-bottom:20px}.v7-ai-chatbot-admin .v7-card h2,.v7-ai-chatbot-admin .v7-card h3{margin-top:0}.v7-ai-chatbot-admin .v7-stats{list-style:none;padding:0;margin:0}.v7-ai-chatbot-admin .v7-stats li{padding:10px 0;border-bottom:1px solid #f0f0f1}.v7-ai-chatbot-admin .v7-stats li:last-child{border:0}.v7-ai-chatbot-admin ol{padding-left:20px}#v7-model{min-width:300px}@media(max-width:782px){.v7-ai-chatbot-admin .v7-settings-container{grid-template-columns:1fr}}');
+        wp_add_inline_style('wp-admin', '.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{display:grid;grid-template-columns:1fr 300px;gap:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card{background:#fff;border:1px solid #ccd0d4;box-shadow:0 1px 1px rgba(0,0,0,.04);padding:20px;margin-bottom:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card h2,.v7-ai-chatbot-admin .v7-ai-chatbot-card h3{margin-top:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats{list-style:none;padding:0;margin:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li{padding:10px 0;border-bottom:1px solid #f0f0f1}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li:last-child{border:0}.v7-ai-chatbot-admin ol{padding-left:20px}#v7-ai-chatbot-model{min-width:300px}@media(max-width:782px){.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{grid-template-columns:1fr}}');
         wp_add_inline_script('jquery', '
             jQuery(document).ready(function($){
                 function filterModels(){
-                    var provider=$("#v7-api-provider").val();
-                    $("#v7-model optgroup").hide();
-                    $(".v7-models-"+provider).show();
-                    var currentVal=$("#v7-model").val();
-                    var visibleOptions=$(".v7-models-"+provider+" option");
+                    var provider=$("#v7-ai-chatbot-api-provider").val();
+                    $("#v7-ai-chatbot-model optgroup").hide();
+                    $(".v7-ai-chatbot-models-"+provider).show();
+                    var currentVal=$("#v7-ai-chatbot-model").val();
+                    var visibleOptions=$(".v7-ai-chatbot-models-"+provider+" option");
                     var isCurrentVisible=false;
                     visibleOptions.each(function(){if($(this).val()===currentVal)isCurrentVisible=true;});
-                    if(!isCurrentVisible&&visibleOptions.length>0)$("#v7-model").val(visibleOptions.first().val());
+                    if(!isCurrentVisible&&visibleOptions.length>0)$("#v7-ai-chatbot-model").val(visibleOptions.first().val());
                 }
-                $("#v7-api-provider").on("change",filterModels);
+                $("#v7-ai-chatbot-api-provider").on("change",filterModels);
                 filterModels();
             });
         ');
@@ -325,9 +325,9 @@ class V7_AI_Chatbot
         wp_enqueue_style('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/css/chatbot.css', [], '1.0.0');
         wp_enqueue_script('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/js/chatbot.js', ['jquery'], '1.0.0', true);
 
-        wp_localize_script('v7-ai-chatbot', 'v7AiChatbot', array(
+        wp_localize_script('v7-ai-chatbot', 'v7AiChatbotParams', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('v7_chatbot_nonce'),
+            'nonce' => wp_create_nonce('v7_ai_chatbot_nonce'),
             'settings' => array(
                 'greeting' => $settings['greeting'],
                 'placeholder' => $settings['placeholder'],
@@ -338,7 +338,7 @@ class V7_AI_Chatbot
             )
         ));
 
-        $custom_css = ":root{--v7-primary:{$settings['primary_color']};--v7-bubble:{$settings['bubble_color']};--v7-text:{$settings['text_color']}}";
+        $custom_css = ":root{--v7-ai-chatbot-primary:{$settings['primary_color']};--v7-ai-chatbot-bubble:{$settings['bubble_color']};--v7-ai-chatbot-text:{$settings['text_color']}}";
         wp_add_inline_style('v7-ai-chatbot', $custom_css);
     }
 
@@ -352,7 +352,7 @@ class V7_AI_Chatbot
 
     public function handle_query()
     {
-        check_ajax_referer('v7_chatbot_nonce', 'nonce');
+        check_ajax_referer('v7_ai_chatbot_nonce', 'nonce');
 
         $message = isset($_POST['message']) ? sanitize_text_field(wp_unslash($_POST['message'])) : '';
 
