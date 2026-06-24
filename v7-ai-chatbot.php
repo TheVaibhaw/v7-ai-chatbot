@@ -10,6 +10,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: v7-ai-chatbot
 Requires at least: 5.0
+Tested up to: 7.0
 Requires PHP: 7.4
 */
 
