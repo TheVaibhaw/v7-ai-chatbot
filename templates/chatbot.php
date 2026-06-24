@@ -1,7 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 <div id="v7-chatbot-container" class="<?php echo esc_attr($settings['position']); ?>">
     <div id="v7-chatbot-button" style="display:none">
