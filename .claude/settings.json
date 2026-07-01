@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -ril \"wp_ai\\\\|AI Client\\\\|Ai_Client\\\\|WordPress\\\\\\\\\\\\\\\\AI\" /home/tpss/public_html 2>/dev/null | head -50; echo \"---\"; find / -maxdepth 4 -iname \"wp-includes\" 2>/dev/null)",
+      "Read(//home/tpss/public_html/**)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/**)",
+      "Bash(find /home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client -maxdepth 2 -type d | sort)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/**)",
+      "Bash(grep -n \"wp_ai\\\\|function wp_\" /home/tpss/public_html/Training/wordpress/wp-includes/ai-client.php | head -50)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/Providers/**)",
+      "Bash(xargs -I{} basename {})",
+      "Bash(find /home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/Providers -maxdepth 1 -type d)",
+      "Bash(grep -n \"public function\\\\|class \\\\|^ \\\\*\" /home/tpss/public_html/Training/wordpress/wp-includes/ai-client/class-wp-ai-client-prompt-builder.php | head -60)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/ai-client/**)",
+      "Bash(find /home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/Providers/Models -maxdepth 1 -type d)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/Providers/Models/**)",
+      "Bash(sed -n '87,140p' /home/tpss/public_html/Training/wordpress/wp-includes/ai-client/class-wp-ai-client-prompt-builder.php)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/**)",
+      "Bash(find /home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src -iname \"*.php\" -path \"*Providers*\" | grep -v -E \"Enums|Contracts|Http|DTO|ApiBased|OpenAiCompat\" )",
+      "Bash(grep -rl \"options-ai\\\\|Settings.*AI\\\\|ai_api_key\\\\|register_default_providers\\\\|DefaultProviders\" /home/tpss/public_html/Training/wordpress/wp-admin/ /home/tpss/public_html/Training/wordpress/wp-includes/ai-client* /home/tpss/public_html/Training/wordpress/wp-includes/php-ai-client/src/Providers/ 2>/dev/null | head -20)",
+      "Read(//home/tpss/public_html/Training/wordpress/wp-admin/**)",
+      "Bash(cd /home/tpss/public_html && find . -name \"wp-cli.yml\" -o -name \"wp-config.php\" 2>/dev/null | head -5)",
+      "Read(//home/tpss/public_html/Training/wordpress/**)",
+      "Bash(wp --info)",
+      "Bash(php -l /home/tpss/public_html/Training/Learning/own-work/v7-ai-chatbot/v7-ai-chatbot.php)",
+      "Bash(which plugin-check *)",
+      "Read(//usr/**)",
+      "Bash(chmod +x /tmp/check_plugin.sh)",
+      "Bash(/tmp/check_plugin.sh)",
+      "Bash(chmod +x /tmp/detailed_check.sh)",
+      "Bash(/tmp/detailed_check.sh)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

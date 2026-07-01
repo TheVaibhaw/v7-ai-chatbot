@@ -66,9 +66,6 @@ class V7_AI_Chatbot
     {
         $sanitized = [];
         $sanitized['enabled'] = !empty($input['enabled']) ? 1 : 0;
-        $sanitized['api_key'] = isset($input['api_key']) ? sanitize_text_field($input['api_key']) : '';
-        $sanitized['api_provider'] = isset($input['api_provider']) ? sanitize_text_field($input['api_provider']) : 'openai';
-        $sanitized['model'] = isset($input['model']) ? sanitize_text_field($input['model']) : 'gpt-3.5-turbo';
         $sanitized['position'] = isset($input['position']) ? sanitize_text_field($input['position']) : 'bottom-right';
         $sanitized['primary_color'] = isset($input['primary_color']) ? sanitize_hex_color($input['primary_color']) : '#0073aa';
         $sanitized['bubble_color'] = isset($input['bubble_color']) ? sanitize_hex_color($input['bubble_color']) : '#0073aa';
@@ -125,50 +122,8 @@ class V7_AI_Chatbot
                         </div>
 
                         <div class="v7-ai-chatbot-card">
-                            <h2><?php esc_html_e('AI Configuration', 'v7-ai-chatbot'); ?></h2>
+                            <h2><?php esc_html_e('Generation Settings', 'v7-ai-chatbot'); ?></h2>
                             <table class="form-table">
-                                <tr>
-                                    <th><?php esc_html_e('API Provider', 'v7-ai-chatbot'); ?></th>
-                                    <td>
-                                        <select name="v7_ai_chatbot_settings[api_provider]" id="v7-ai-chatbot-api-provider">
-                                            <option value="groq" <?php selected($settings['api_provider'], 'groq'); ?>>Groq (FREE)</option>
-                                            <option value="gemini" <?php selected($settings['api_provider'], 'gemini'); ?>>Google Gemini (FREE)</option>
-                                            <option value="openai" <?php selected($settings['api_provider'], 'openai'); ?>>OpenAI (Paid)</option>
-                                        </select>
-                                        <p class="description" id="v7-ai-chatbot-api-help"></p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th><?php esc_html_e('API Key', 'v7-ai-chatbot'); ?></th>
-                                    <td><input type="password" name="v7_ai_chatbot_settings[api_key]" value="<?php echo esc_attr($settings['api_key']); ?>" class="regular-text" autocomplete="off"></td>
-                                </tr>
-                                <tr>
-                                    <th><?php esc_html_e('Model', 'v7-ai-chatbot'); ?></th>
-                                    <td>
-                                        <select name="v7_ai_chatbot_settings[model]" id="v7-ai-chatbot-model" class="regular-text">
-                                            <optgroup label="Groq Models" class="v7-ai-chatbot-models-groq">
-                                                <option value="llama-3.3-70b-versatile" <?php selected($settings['model'], 'llama-3.3-70b-versatile'); ?>>Llama 3.3 70B Versatile (Recommended)</option>
-                                                <option value="llama-3.1-8b-instant" <?php selected($settings['model'], 'llama-3.1-8b-instant'); ?>>Llama 3.1 8B Instant (Fast)</option>
-                                                <option value="llama-3.2-90b-vision-preview" <?php selected($settings['model'], 'llama-3.2-90b-vision-preview'); ?>>Llama 3.2 90B Vision</option>
-                                                <option value="mixtral-8x7b-32768" <?php selected($settings['model'], 'mixtral-8x7b-32768'); ?>>Mixtral 8x7B (32K context)</option>
-                                                <option value="gemma2-9b-it" <?php selected($settings['model'], 'gemma2-9b-it'); ?>>Gemma 2 9B</option>
-                                            </optgroup>
-                                            <optgroup label="Google Gemini Models" class="v7-ai-chatbot-models-gemini">
-                                                <option value="gemini-1.5-flash" <?php selected($settings['model'], 'gemini-1.5-flash'); ?>>Gemini 1.5 Flash (Fast)</option>
-                                                <option value="gemini-1.5-flash-8b" <?php selected($settings['model'], 'gemini-1.5-flash-8b'); ?>>Gemini 1.5 Flash 8B (Fastest)</option>
-                                                <option value="gemini-1.5-pro" <?php selected($settings['model'], 'gemini-1.5-pro'); ?>>Gemini 1.5 Pro (Best Quality)</option>
-                                                <option value="gemini-2.0-flash-exp" <?php selected($settings['model'], 'gemini-2.0-flash-exp'); ?>>Gemini 2.0 Flash (Experimental)</option>
-                                            </optgroup>
-                                            <optgroup label="OpenAI Models" class="v7-ai-chatbot-models-openai">
-                                                <option value="gpt-3.5-turbo" <?php selected($settings['model'], 'gpt-3.5-turbo'); ?>>GPT-3.5 Turbo (Budget)</option>
-                                                <option value="gpt-4" <?php selected($settings['model'], 'gpt-4'); ?>>GPT-4 (Powerful)</option>
-                                                <option value="gpt-4-turbo" <?php selected($settings['model'], 'gpt-4-turbo'); ?>>GPT-4 Turbo (Fast + Powerful)</option>
-                                                <option value="gpt-4o" <?php selected($settings['model'], 'gpt-4o'); ?>>GPT-4o (Latest)</option>
-                                                <option value="gpt-4o-mini" <?php selected($settings['model'], 'gpt-4o-mini'); ?>>GPT-4o Mini (Cost Effective)</option>
-                                            </optgroup>
-                                        </select>
-                                    </td>
-                                </tr>
                                 <tr>
                                     <th><?php esc_html_e('Max Tokens', 'v7-ai-chatbot'); ?></th>
                                     <td><input type="number" name="v7_ai_chatbot_settings[max_tokens]" value="<?php echo esc_attr($settings['max_tokens']); ?>" min="50" max="2000"></td>
@@ -181,6 +136,12 @@ class V7_AI_Chatbot
                                     </td>
                                 </tr>
                             </table>
+                            <?php if (!function_exists('wp_ai_client_prompt') || !wp_supports_ai()): ?>
+                                <div style="background:#fff8f0;border:1px solid #ffb900;padding:12px;margin-top:15px;border-radius:4px;">
+                                    <p><strong><?php esc_html_e('⚠️ AI Features Not Available', 'v7-ai-chatbot'); ?></strong></p>
+                                    <p><?php esc_html_e('This plugin requires WordPress 7.0+ with an AI provider configured. Please ask your site administrator to set up an AI provider in WordPress settings.', 'v7-ai-chatbot'); ?></p>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="v7-ai-chatbot-card">
@@ -229,21 +190,11 @@ class V7_AI_Chatbot
                         </div>
 
                         <div class="v7-ai-chatbot-card">
-                            <h3><?php esc_html_e('Get Free API Keys', 'v7-ai-chatbot'); ?></h3>
-                            <ul style="margin:0;padding-left:20px">
-                                <li><strong>Groq (FREE):</strong><br><a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></li>
-                                <li><strong>Gemini (FREE):</strong><br><a href="https://makersuite.google.com/app/apikey" target="_blank">makersuite.google.com</a></li>
-                                <li><strong>OpenAI (Paid):</strong><br><a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="v7-ai-chatbot-card">
-                            <h3><?php esc_html_e('Instructions', 'v7-ai-chatbot'); ?></h3>
+                            <h3><?php esc_html_e('Setup Instructions', 'v7-ai-chatbot'); ?></h3>
                             <ol>
-                                <li><?php esc_html_e('Choose API provider', 'v7-ai-chatbot'); ?></li>
-                                <li><?php esc_html_e('Get your free API key', 'v7-ai-chatbot'); ?></li>
-                                <li><?php esc_html_e('Enter API key', 'v7-ai-chatbot'); ?></li>
-                                <li><?php esc_html_e('Select content sources', 'v7-ai-chatbot'); ?></li>
+                                <li><?php esc_html_e('Configure an AI provider in WordPress settings', 'v7-ai-chatbot'); ?></li>
+                                <li><?php esc_html_e('Select content sources below', 'v7-ai-chatbot'); ?></li>
+                                <li><?php esc_html_e('Adjust generation settings as needed', 'v7-ai-chatbot'); ?></li>
                                 <li><?php esc_html_e('Enable the chatbot', 'v7-ai-chatbot'); ?></li>
                             </ol>
                         </div>
@@ -258,9 +209,6 @@ class V7_AI_Chatbot
     {
         return [
             'enabled' => 0,
-            'api_key' => '',
-            'api_provider' => 'groq',
-            'model' => 'llama-3.3-70b-versatile',
             'position' => 'bottom-right',
             'primary_color' => '#0073aa',
             'bubble_color' => '#0073aa',
@@ -298,23 +246,7 @@ class V7_AI_Chatbot
         if ('toplevel_page_v7-ai-chatbot' !== $hook) return;
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('wp-color-picker');
-        wp_add_inline_style('wp-admin', '.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{display:grid;grid-template-columns:1fr 300px;gap:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card{background:#fff;border:1px solid #ccd0d4;box-shadow:0 1px 1px rgba(0,0,0,.04);padding:20px;margin-bottom:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card h2,.v7-ai-chatbot-admin .v7-ai-chatbot-card h3{margin-top:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats{list-style:none;padding:0;margin:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li{padding:10px 0;border-bottom:1px solid #f0f0f1}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li:last-child{border:0}.v7-ai-chatbot-admin ol{padding-left:20px}#v7-ai-chatbot-model{min-width:300px}@media(max-width:782px){.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{grid-template-columns:1fr}}');
-        wp_add_inline_script('jquery', '
-            jQuery(document).ready(function($){
-                function filterModels(){
-                    var provider=$("#v7-ai-chatbot-api-provider").val();
-                    $("#v7-ai-chatbot-model optgroup").hide();
-                    $(".v7-ai-chatbot-models-"+provider).show();
-                    var currentVal=$("#v7-ai-chatbot-model").val();
-                    var visibleOptions=$(".v7-ai-chatbot-models-"+provider+" option");
-                    var isCurrentVisible=false;
-                    visibleOptions.each(function(){if($(this).val()===currentVal)isCurrentVisible=true;});
-                    if(!isCurrentVisible&&visibleOptions.length>0)$("#v7-ai-chatbot-model").val(visibleOptions.first().val());
-                }
-                $("#v7-ai-chatbot-api-provider").on("change",filterModels);
-                filterModels();
-            });
-        ');
+        wp_add_inline_style('wp-admin', '.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{display:grid;grid-template-columns:1fr 300px;gap:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card{background:#fff;border:1px solid #ccd0d4;box-shadow:0 1px 1px rgba(0,0,0,.04);padding:20px;margin-bottom:20px}.v7-ai-chatbot-admin .v7-ai-chatbot-card h2,.v7-ai-chatbot-admin .v7-ai-chatbot-card h3{margin-top:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats{list-style:none;padding:0;margin:0}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li{padding:10px 0;border-bottom:1px solid #f0f0f1}.v7-ai-chatbot-admin .v7-ai-chatbot-stats li:last-child{border:0}.v7-ai-chatbot-admin ol{padding-left:20px}@media(max-width:782px){.v7-ai-chatbot-admin .v7-ai-chatbot-settings-container{grid-template-columns:1fr}}');
     }
 
     public function enqueue_frontend()
@@ -362,10 +294,6 @@ class V7_AI_Chatbot
 
         $settings = get_option('v7_ai_chatbot_settings', $this->get_defaults());
 
-        if (empty($settings['api_key'])) {
-            wp_send_json_error(['message' => esc_html__('API key not configured', 'v7-ai-chatbot')]);
-        }
-
         $context = $this->get_site_context($settings);
         $response = $this->query_ai($message, $context, $settings);
 
@@ -411,113 +339,21 @@ class V7_AI_Chatbot
 
     private function query_ai($message, $context, $settings)
     {
-        switch ($settings['api_provider']) {
-            case 'groq':
-                return $this->query_groq($message, $context, $settings);
-            case 'gemini':
-                return $this->query_gemini($message, $context, $settings);
-            case 'openai':
-                return $this->query_openai($message, $context, $settings);
-            default:
-                return new WP_Error('invalid_provider', esc_html__('Invalid API provider', 'v7-ai-chatbot'));
-        }
-    }
-
-    private function query_groq($message, $context, $settings)
-    {
-        $api_url = 'https://api.groq.com/openai/v1/chat/completions';
-        $request_body = array(
-            'model' => $settings['model'],
-            'messages' => array(
-                array('role' => 'system', 'content' => $context),
-                array('role' => 'user', 'content' => $message)
-            ),
-            'max_tokens' => intval($settings['max_tokens']),
-            'temperature' => floatval($settings['temperature'])
-        );
-        $response = wp_remote_post($api_url, array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $settings['api_key'],
-                'Content-Type' => 'application/json'
-            ),
-            'body' => wp_json_encode($request_body),
-            'timeout' => 60
-        ));
-        if (is_wp_error($response)) return $response;
-        $code = wp_remote_retrieve_response_code($response);
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-        if (200 !== $code) {
-            $error_msg = isset($body['error']['message']) ? $body['error']['message'] : 'Groq API error (Code: ' . $code . ')';
-            return new WP_Error('api_error', esc_html($error_msg));
-        }
-        if (!isset($body['choices'][0]['message']['content'])) return new WP_Error('invalid_response', esc_html__('Invalid response from Groq', 'v7-ai-chatbot'));
-        return wp_kses_post($body['choices'][0]['message']['content']);
-    }
-
-    private function query_gemini($message, $context, $settings)
-    {
-        $api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $settings['model'] . ':generateContent?key=' . $settings['api_key'];
-        $body = array(
-            'contents' => array(
-                array('parts' => array(array('text' => $context . "\n\nUser: " . $message)))
-            ),
-            'generationConfig' => array(
-                'maxOutputTokens' => intval($settings['max_tokens']),
-                'temperature' => floatval($settings['temperature'])
-            )
-        );
-        $response = wp_remote_post($api_url, array(
-            'headers' => array('Content-Type' => 'application/json'),
-            'body' => wp_json_encode($body),
-            'timeout' => 30
-        ));
-        if (is_wp_error($response)) return $response;
-        $code = wp_remote_retrieve_response_code($response);
-        if (200 !== $code) return new WP_Error('api_error', esc_html__('Gemini API request failed', 'v7-ai-chatbot'));
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-        if (!isset($body['candidates'][0]['content']['parts'][0]['text'])) return new WP_Error('invalid_response', esc_html__('Invalid response', 'v7-ai-chatbot'));
-        return wp_kses_post($body['candidates'][0]['content']['parts'][0]['text']);
-    }
-
-    private function query_openai($message, $context, $settings)
-    {
-        $api_url = 'https://api.openai.com/v1/chat/completions';
-
-        $body = array(
-            'model' => $settings['model'],
-            'messages' => array(
-                array('role' => 'system', 'content' => $context),
-                array('role' => 'user', 'content' => $message)
-            ),
-            'max_tokens' => intval($settings['max_tokens']),
-            'temperature' => floatval($settings['temperature'])
-        );
-
-        $response = wp_remote_post($api_url, array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $settings['api_key'],
-                'Content-Type' => 'application/json'
-            ),
-            'body' => wp_json_encode($body),
-            'timeout' => 30
-        ));
-
-        if (is_wp_error($response)) {
-            return $response;
+        if (!function_exists('wp_ai_client_prompt') || !wp_supports_ai()) {
+            return new WP_Error('ai_unavailable', esc_html__('AI features are not available. Please ask your site administrator to configure an AI provider in WordPress.', 'v7-ai-chatbot'));
         }
 
-        $response_code = wp_remote_retrieve_response_code($response);
-        if (200 !== $response_code) {
-            return new WP_Error('api_error', esc_html__('API request failed', 'v7-ai-chatbot'));
+        $result = wp_ai_client_prompt($message)
+            ->using_system_instruction($context)
+            ->using_max_tokens(intval($settings['max_tokens']))
+            ->using_temperature(floatval($settings['temperature']))
+            ->generate_text();
+
+        if (is_wp_error($result)) {
+            return $result;
         }
 
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-
-        if (!isset($body['choices'][0]['message']['content'])) {
-            return new WP_Error('invalid_response', esc_html__('Invalid API response', 'v7-ai-chatbot'));
-        }
-
-        return wp_kses_post($body['choices'][0]['message']['content']);
+        return wp_kses_post($result);
     }
 }
 
