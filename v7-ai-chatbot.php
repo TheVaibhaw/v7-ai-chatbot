@@ -3,7 +3,7 @@
 Plugin Name: V7 AI Chatbot
 Plugin URI: https://github.com/TheVaibhaw/v7-ai-chatbot
 Description: AI-powered chatbot for WordPress sites. Provides intelligent customer support using your site content.
-Version: 1.0.0
+Version: 2.0.0
 Author: Vaibhaw Kumar Parashar
 Author URI: https://vaibhawkumar.in
 License: GPLv2 or later
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('V7_AI_CHATBOT_VERSION', '1.0.0');
+define('V7_AI_CHATBOT_VERSION', '2.0.0');
 define('V7_AI_CHATBOT_PATH', plugin_dir_path(__FILE__));
 define('V7_AI_CHATBOT_URL', plugin_dir_url(__FILE__));
 
@@ -254,8 +254,8 @@ class V7_AI_Chatbot
         $settings = get_option('v7_ai_chatbot_settings', $this->get_defaults());
         if (empty($settings['enabled'])) return;
 
-        wp_enqueue_style('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/css/chatbot.css', [], '1.0.0');
-        wp_enqueue_script('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/js/chatbot.js', ['jquery'], '1.0.0', true);
+        wp_enqueue_style('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/css/chatbot.css', [], V7_AI_CHATBOT_VERSION);
+        wp_enqueue_script('v7-ai-chatbot', V7_AI_CHATBOT_URL . 'assets/js/chatbot.js', ['jquery'], V7_AI_CHATBOT_VERSION, true);
 
         wp_localize_script('v7-ai-chatbot', 'v7AiChatbotParams', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
