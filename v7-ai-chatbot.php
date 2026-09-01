@@ -29,6 +29,7 @@ require_once V7_AI_CHATBOT_PATH . 'includes/class-database.php';
 require_once V7_AI_CHATBOT_PATH . 'includes/class-ai-provider.php';
 require_once V7_AI_CHATBOT_PATH . 'includes/class-security.php';
 require_once V7_AI_CHATBOT_PATH . 'includes/class-analytics.php';
+require_once V7_AI_CHATBOT_PATH . 'includes/provider-models.php';
 
 class V7_AI_Chatbot {
 	private static $instance = null;
@@ -289,62 +290,131 @@ class V7_AI_Chatbot {
 				<div id="api" class="v7-ai-chatbot-tab-content">
 					<div class="v7-ai-chatbot-card">
 						<h2><?php esc_html_e( 'API Provider Configuration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<p class="description" style="margin-bottom: 15px;">🚀 <?php esc_html_e( 'Select from 8+ AI providers with comprehensive model support', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 						<table class="form-table">
 							<tr>
 								<th><?php esc_html_e( 'AI Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<select name="v7_ai_chatbot_provider_settings[provider]" id="v7-ai-provider">
-										<option value="wordpress-ai" <?php selected( $provider_settings['provider'] ?? '', 'wordpress-ai' ); ?>><?php esc_html_e( 'WordPress AI Client (Recommended)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="anthropic" <?php selected( $provider_settings['provider'] ?? '', 'anthropic' ); ?>><?php esc_html_e( 'Anthropic (Claude)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="openai" <?php selected( $provider_settings['provider'] ?? '', 'openai' ); ?>><?php esc_html_e( 'OpenAI (GPT)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="ollama" <?php selected( $provider_settings['provider'] ?? '', 'ollama' ); ?>><?php esc_html_e( 'Ollama (Local)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="">-- <?php esc_html_e( 'Select Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?> --</option>
+										<option value="wordpress-ai" <?php selected( $provider_settings['provider'] ?? '', 'wordpress-ai' ); ?>>📘 <?php esc_html_e( 'WordPress AI Client (Recommended)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="anthropic" <?php selected( $provider_settings['provider'] ?? '', 'anthropic' ); ?>>🧠 <?php esc_html_e( 'Anthropic Claude', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="openai" <?php selected( $provider_settings['provider'] ?? '', 'openai' ); ?>>🤖 <?php esc_html_e( 'OpenAI GPT', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="google" <?php selected( $provider_settings['provider'] ?? '', 'google' ); ?>>✨ <?php esc_html_e( 'Google Gemini', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="xai" <?php selected( $provider_settings['provider'] ?? '', 'xai' ); ?>>⚡ <?php esc_html_e( 'xAI Grok', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="mistral" <?php selected( $provider_settings['provider'] ?? '', 'mistral' ); ?>>🚀 <?php esc_html_e( 'Mistral AI', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="cohere" <?php selected( $provider_settings['provider'] ?? '', 'cohere' ); ?>>🎯 <?php esc_html_e( 'Cohere', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="meta" <?php selected( $provider_settings['provider'] ?? '', 'meta' ); ?>>🦙 <?php esc_html_e( 'Meta Llama', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="ollama" <?php selected( $provider_settings['provider'] ?? '', 'ollama' ); ?>>🏠 <?php esc_html_e( 'Ollama (Self-Hosted)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 									</select>
-									<p class="description"><?php esc_html_e( 'Select your preferred AI provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( '8 major AI providers with 50+ models available', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 								</td>
 							</tr>
 							<tr>
 								<th><?php esc_html_e( 'Model', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
-									<input type="text" name="v7_ai_chatbot_provider_settings[model]" value="<?php echo esc_attr( $provider_settings['model'] ?? 'claude-3-5-sonnet-20241022' ); ?>" class="regular-text">
-									<p class="description"><?php esc_html_e( 'Model name (e.g., gpt-4, claude-3-opus, llama2)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<select name="v7_ai_chatbot_provider_settings[model]" id="v7-ai-model">
+										<option value="">-- <?php esc_html_e( 'Select a provider first', V7_AI_CHATBOT_TEXTDOMAIN ); ?> --</option>
+										<?php
+										$current_provider = $provider_settings['provider'] ?? '';
+										$current_model = $provider_settings['model'] ?? '';
+										if ( $current_provider ) {
+											$models = V7_AI_Chatbot_Provider_Models::get_models( $current_provider );
+											foreach ( $models as $model ) {
+												$selected = selected( $current_model, $model['id'], false );
+												$recommended = $model['recommended'] ? ' ⭐ (Recommended)' : '';
+												echo '<option value="' . esc_attr( $model['id'] ) . '"' . $selected . '>' . esc_html( $model['name'] ) . esc_html( $recommended ) . '</option>';
+											}
+										}
+										?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Models dynamically populated based on selected provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 								</td>
 							</tr>
 							<tr>
 								<th><?php esc_html_e( 'Anthropic API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
-									<input type="password" name="v7_ai_chatbot_api_keys[anthropic]" value="" placeholder="<?php esc_attr_e( 'Your Anthropic API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description"><?php echo wp_kses_post( __( 'Get your key from <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a>', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" name="v7_ai_chatbot_api_keys[anthropic]" value="" placeholder="<?php esc_attr_e( 'sk-ant-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">🧠 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> - Required for Claude models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
 							<tr>
 								<th><?php esc_html_e( 'OpenAI API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
-									<input type="password" name="v7_ai_chatbot_api_keys[openai]" value="" placeholder="<?php esc_attr_e( 'Your OpenAI API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description"><?php echo wp_kses_post( __( 'Get your key from <a href="https://platform.openai.com/account/api-keys" target="_blank">OpenAI Platform</a>', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" name="v7_ai_chatbot_api_keys[openai]" value="" placeholder="<?php esc_attr_e( 'sk-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">🤖 <?php echo wp_kses_post( __( 'Get your key from <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noopener">OpenAI Platform</a> - Required for GPT models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Ollama API URL', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Google Gemini API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
-									<input type="url" name="v7_ai_chatbot_provider_settings[ollama_api_url]" value="<?php echo esc_attr( $provider_settings['ollama_api_url'] ?? 'http://localhost:11434' ); ?>" class="regular-text">
-									<p class="description"><?php esc_html_e( 'Local Ollama instance URL', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<input type="password" name="v7_ai_chatbot_api_keys[google]" value="" placeholder="<?php esc_attr_e( 'Your Google API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">✨ <?php echo wp_kses_post( __( 'Get your key from <a href="https://ai.google.dev/" target="_blank" rel="noopener">Google AI Studio</a> - Required for Gemini models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
+							<tr>
+								<th><?php esc_html_e( 'xAI Grok API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="password" name="v7_ai_chatbot_api_keys[xai]" value="" placeholder="<?php esc_attr_e( 'Your Grok API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">⚡ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.x.ai/" target="_blank" rel="noopener">xAI Console</a> - Required for Grok models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th><?php esc_html_e( 'Mistral API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="password" name="v7_ai_chatbot_api_keys[mistral]" value="" placeholder="<?php esc_attr_e( 'Your Mistral API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">🚀 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.mistral.ai/" target="_blank" rel="noopener">Mistral Console</a> - Required for Mistral models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th><?php esc_html_e( 'Cohere API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="password" name="v7_ai_chatbot_api_keys[cohere]" value="" placeholder="<?php esc_attr_e( 'Your Cohere API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">🎯 <?php echo wp_kses_post( __( 'Get your key from <a href="https://dashboard.cohere.com/" target="_blank" rel="noopener">Cohere Dashboard</a> - Required for Cohere models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th><?php esc_html_e( 'Meta Llama Provider Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="password" name="v7_ai_chatbot_api_keys[meta]" value="" placeholder="<?php esc_attr_e( 'API key for Llama via Together.ai or Replicate', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">🦙 <?php echo wp_kses_post( __( 'Use <a href="https://together.ai/" target="_blank" rel="noopener">Together.ai</a> or <a href="https://replicate.com/" target="_blank" rel="noopener">Replicate</a> to access Llama models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th><?php esc_html_e( 'Ollama Self-Hosted URL', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="url" name="v7_ai_chatbot_provider_settings[ollama_api_url]" value="<?php echo esc_attr( $provider_settings['ollama_api_url'] ?? 'http://localhost:11434' ); ?>" class="regular-text" placeholder="http://localhost:11434">
+									<p class="description">🏠 <?php esc_html_e( 'For self-hosted Ollama instance - free and runs locally', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="v7-ai-chatbot-card">
+						<h2><?php esc_html_e( 'Advanced Provider Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<table class="form-table">
 							<tr>
 								<th><?php esc_html_e( 'Request Timeout', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="number" name="v7_ai_chatbot_provider_settings[timeout]" value="<?php echo esc_attr( $provider_settings['timeout'] ?? 30 ); ?>" min="5" max="120"> <?php esc_html_e( 'seconds', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
-									<p class="description"><?php esc_html_e( 'API request timeout duration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Maximum time to wait for API responses (5-120 seconds)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'SSL Verification', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'SSL Certificate Verification', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_provider_settings[verify_ssl]" value="1" <?php checked( $provider_settings['verify_ssl'] ?? 1, 1 ); ?>>
-										<?php esc_html_e( 'Verify SSL certificates', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Verify SSL/TLS certificates', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Keep enabled for production security', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description">🔒 <?php esc_html_e( '✓ Enabled recommended for production (security)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th><?php esc_html_e( 'Connection Test', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<button type="button" class="button button-secondary v7-test-api-btn"><?php esc_html_e( 'Test Selected Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></button>
+									<p class="description"><?php esc_html_e( 'Verify your API configuration before deployment', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 								</td>
 							</tr>
 						</table>
@@ -708,7 +778,8 @@ class V7_AI_Chatbot {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
 		wp_enqueue_style( 'v7-ai-chatbot-admin', V7_AI_CHATBOT_URL . 'assets/css/admin.css', [], V7_AI_CHATBOT_VERSION );
-		wp_enqueue_script( 'v7-ai-chatbot-admin', V7_AI_CHATBOT_URL . 'assets/js/admin.js', [], V7_AI_CHATBOT_VERSION, true );
+		wp_enqueue_script( 'v7-ai-chatbot-provider-models', V7_AI_CHATBOT_URL . 'assets/js/provider-models.js', [], V7_AI_CHATBOT_VERSION, true );
+		wp_enqueue_script( 'v7-ai-chatbot-admin', V7_AI_CHATBOT_URL . 'assets/js/admin.js', [ 'jquery', 'v7-ai-chatbot-provider-models' ], V7_AI_CHATBOT_VERSION, true );
 	}
 
 	public function enqueue_frontend() {
