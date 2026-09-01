@@ -371,11 +371,44 @@ const V7AIProviderModels = {
 	init: function() {
 		const providerSelect = document.getElementById('v7-ai-provider');
 		if (providerSelect) {
-			providerSelect.addEventListener('change', (e) => this.updateModels(e.target.value));
+			providerSelect.addEventListener('change', (e) => {
+				this.updateModels(e.target.value);
+				this.updateAPIKeyFields(e.target.value);
+			});
 			// Trigger on page load if provider is already selected
 			if (providerSelect.value) {
 				this.updateModels(providerSelect.value);
+				this.updateAPIKeyFields(providerSelect.value);
 			}
+		}
+	},
+
+	// Update which API key fields are visible based on selected provider
+	updateAPIKeyFields: function(provider) {
+		// Hide all API key fields first
+		const allKeyFields = document.querySelectorAll('[data-api-key-field]');
+		allKeyFields.forEach(field => {
+			field.style.display = 'none';
+		});
+
+		// Show only the field for selected provider
+		if (provider && provider !== '') {
+			const visibleField = document.querySelector(`[data-api-key-field="${provider}"]`);
+			if (visibleField) {
+				visibleField.style.display = '';
+			}
+		}
+
+		// Hide/show Ollama URL field
+		const ollamaField = document.querySelector('[data-provider="ollama-url"]');
+		if (ollamaField) {
+			ollamaField.style.display = (provider === 'ollama') ? '' : 'none';
+		}
+
+		// Hide/show Advanced Settings based on provider
+		const advancedSection = document.querySelector('[data-section="advanced-provider"]');
+		if (advancedSection) {
+			advancedSection.style.display = (provider === 'wordpress-ai') ? 'none' : '';
 		}
 	},
 

@@ -301,6 +301,7 @@ class V7_AI_Chatbot {
 										<option value="anthropic" <?php selected( $provider_settings['provider'] ?? '', 'anthropic' ); ?>>🧠 <?php esc_html_e( 'Anthropic Claude', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 										<option value="openai" <?php selected( $provider_settings['provider'] ?? '', 'openai' ); ?>>🤖 <?php esc_html_e( 'OpenAI GPT', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 										<option value="google" <?php selected( $provider_settings['provider'] ?? '', 'google' ); ?>>✨ <?php esc_html_e( 'Google Gemini', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="groq" <?php selected( $provider_settings['provider'] ?? '', 'groq' ); ?>>⚙️ <?php esc_html_e( 'Groq (Ultra-Fast)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 										<option value="xai" <?php selected( $provider_settings['provider'] ?? '', 'xai' ); ?>>⚡ <?php esc_html_e( 'xAI Grok', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 										<option value="mistral" <?php selected( $provider_settings['provider'] ?? '', 'mistral' ); ?>>🚀 <?php esc_html_e( 'Mistral AI', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
 										<option value="cohere" <?php selected( $provider_settings['provider'] ?? '', 'cohere' ); ?>>🎯 <?php esc_html_e( 'Cohere', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
@@ -331,49 +332,56 @@ class V7_AI_Chatbot {
 									<p class="description"><?php esc_html_e( 'Models dynamically populated based on selected provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="anthropic" style="display: none;">
 								<th><?php esc_html_e( 'Anthropic API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[anthropic]" value="" placeholder="<?php esc_attr_e( 'sk-ant-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">🧠 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> - Required for Claude models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="openai" style="display: none;">
 								<th><?php esc_html_e( 'OpenAI API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[openai]" value="" placeholder="<?php esc_attr_e( 'sk-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">🤖 <?php echo wp_kses_post( __( 'Get your key from <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noopener">OpenAI Platform</a> - Required for GPT models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="google" style="display: none;">
 								<th><?php esc_html_e( 'Google Gemini API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[google]" value="" placeholder="<?php esc_attr_e( 'Your Google API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">✨ <?php echo wp_kses_post( __( 'Get your key from <a href="https://ai.google.dev/" target="_blank" rel="noopener">Google AI Studio</a> - Required for Gemini models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="groq" style="display: none;">
+								<th><?php esc_html_e( 'Groq API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<td>
+									<input type="password" name="v7_ai_chatbot_api_keys[groq]" value="" placeholder="<?php esc_attr_e( 'gsk_...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
+									<p class="description">⚙️ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq Console</a> - Ultra-fast LPU inference', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+								</td>
+							</tr>
+							<tr data-api-key-field="xai" style="display: none;">
 								<th><?php esc_html_e( 'xAI Grok API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[xai]" value="" placeholder="<?php esc_attr_e( 'Your Grok API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">⚡ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.x.ai/" target="_blank" rel="noopener">xAI Console</a> - Required for Grok models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="mistral" style="display: none;">
 								<th><?php esc_html_e( 'Mistral API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[mistral]" value="" placeholder="<?php esc_attr_e( 'Your Mistral API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">🚀 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.mistral.ai/" target="_blank" rel="noopener">Mistral Console</a> - Required for Mistral models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="cohere" style="display: none;">
 								<th><?php esc_html_e( 'Cohere API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[cohere]" value="" placeholder="<?php esc_attr_e( 'Your Cohere API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
 									<p class="description">🎯 <?php echo wp_kses_post( __( 'Get your key from <a href="https://dashboard.cohere.com/" target="_blank" rel="noopener">Cohere Dashboard</a> - Required for Cohere models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
 								</td>
 							</tr>
-							<tr>
+							<tr data-api-key-field="meta" style="display: none;">
 								<th><?php esc_html_e( 'Meta Llama Provider Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
 								<td>
 									<input type="password" name="v7_ai_chatbot_api_keys[meta]" value="" placeholder="<?php esc_attr_e( 'API key for Llama via Together.ai or Replicate', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">

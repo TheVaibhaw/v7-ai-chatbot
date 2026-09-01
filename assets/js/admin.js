@@ -40,12 +40,20 @@
 			const self = this;
 			$('#v7-ai-provider').on('change', function () {
 				self.updateProviderInfo($(this).val());
+				// Also update field visibility
+				if (typeof V7AIProviderModels !== 'undefined') {
+					V7AIProviderModels.updateAPIKeyFields($(this).val());
+				}
 			});
 
 			// Initialize on page load
 			const currentProvider = $('#v7-ai-provider').val();
 			if (currentProvider) {
 				self.updateProviderInfo(currentProvider);
+				// Also update field visibility on load
+				if (typeof V7AIProviderModels !== 'undefined') {
+					V7AIProviderModels.updateAPIKeyFields(currentProvider);
+				}
 			}
 		},
 
@@ -55,12 +63,12 @@
 
 			let infoHTML = `
 				<div class="provider-info" style="margin-top: 10px; padding: 10px; background: #f0f7ff; border-radius: 4px; border-left: 3px solid #0073aa;">
-					<p><strong>Description:</strong> ${providerData.description}</p>
-					<p><strong>Status:</strong> <span style="display: inline-block; padding: 2px 8px; background: #e8f1f7; border-radius: 3px; font-size: 12px;">${providerData.status}</span></p>
-					<p><strong>Pricing:</strong> ${providerData.pricing}</p>
+					<p><strong>💡 Description:</strong> ${providerData.description}</p>
+					<p><strong>Status:</strong> <span style="display: inline-block; padding: 3px 10px; background: #e8f1f7; border-radius: 3px; font-size: 12px; font-weight: bold;">${providerData.status.toUpperCase()}</span></p>
+					<p><strong>💰 Pricing:</strong> ${providerData.pricing}</p>
 					<p>
-						<a href="${providerData.documentationUrl}" target="_blank" rel="noopener" class="button button-small">Get API Key</a>
-						<a href="${providerData.website}" target="_blank" rel="noopener" class="button button-small">Visit ${providerData.name}</a>
+						<a href="${providerData.documentationUrl || providerData.website}" target="_blank" rel="noopener" class="button button-primary button-small">🔑 Get API Key</a>
+						<a href="${providerData.website}" target="_blank" rel="noopener" class="button button-secondary button-small">🌐 Visit ${providerData.name}</a>
 					</p>
 				</div>
 			`;
