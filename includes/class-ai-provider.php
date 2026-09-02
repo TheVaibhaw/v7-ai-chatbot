@@ -28,7 +28,7 @@ class V7_AI_Chatbot_AI_Provider {
 				// A retired/unavailable model is the single most common cause
 				// here, and the fix isn't obvious from the provider's wording.
 				if ( false !== stripos( $decoded['error']['message'], 'model' ) && ( 404 === $response_code || 400 === $response_code ) ) {
-					$message .= ' ' . __( 'Fix: go to AI Chatbot > API Configuration and click "Load models from my account", then pick a model from the refreshed list and save.', V7_AI_CHATBOT_TEXTDOMAIN );
+					$message .= ' ' . __( 'Fix: go to AI Chatbot > API Configuration and click "Load models from my account", then pick a model from the refreshed list and save.', 'v7-ai-chatbot' );
 				}
 
 				return $message;
@@ -45,7 +45,7 @@ class V7_AI_Chatbot_AI_Provider {
 		if ( '' !== $snippet ) {
 			return sprintf(
 				/* translators: 1: HTTP status code, 2: raw response snippet */
-				__( 'Request failed with HTTP %1$d: %2$s', V7_AI_CHATBOT_TEXTDOMAIN ),
+				__( 'Request failed with HTTP %1$d: %2$s', 'v7-ai-chatbot' ),
 				$response_code,
 				mb_substr( $snippet, 0, 200 )
 			);
@@ -53,7 +53,7 @@ class V7_AI_Chatbot_AI_Provider {
 
 		return sprintf(
 			/* translators: %d: HTTP status code */
-			__( 'Request failed with HTTP %d and no additional details from the provider.', V7_AI_CHATBOT_TEXTDOMAIN ),
+			__( 'Request failed with HTTP %d and no additional details from the provider.', 'v7-ai-chatbot' ),
 			$response_code
 		);
 	}
@@ -81,7 +81,7 @@ class V7_AI_Chatbot_AI_Provider {
 			case 'cohere':
 				return $this->query_cohere( $message, $context, $settings );
 			default:
-				return new WP_Error( 'unknown_provider', __( 'Unknown AI provider', V7_AI_CHATBOT_TEXTDOMAIN ) );
+				return new WP_Error( 'unknown_provider', __( 'Unknown AI provider', 'v7-ai-chatbot' ) );
 		}
 	}
 
@@ -124,7 +124,7 @@ class V7_AI_Chatbot_AI_Provider {
 			$response = wp_remote_get( trailingslashit( $base ) . 'api/tags', [ 'timeout' => 15, 'sslverify' => false ] );
 		} elseif ( isset( $endpoints[ $provider ] ) ) {
 			if ( empty( $api_key ) ) {
-				return new WP_Error( 'missing_api_key', __( 'Save an API key for this provider first, then load its models.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+				return new WP_Error( 'missing_api_key', __( 'Save an API key for this provider first, then load its models.', 'v7-ai-chatbot' ) );
 			}
 
 			list( $url, $header_name, $header_prefix ) = $endpoints[ $provider ];
@@ -135,7 +135,7 @@ class V7_AI_Chatbot_AI_Provider {
 
 			$response = wp_remote_get( $url, [ 'headers' => $headers, 'timeout' => 15 ] );
 		} else {
-			return new WP_Error( 'unsupported_provider', __( 'This provider does not support listing models.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'unsupported_provider', __( 'This provider does not support listing models.', 'v7-ai-chatbot' ) );
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -149,13 +149,13 @@ class V7_AI_Chatbot_AI_Provider {
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $body ) ) {
-			return new WP_Error( 'invalid_response', __( 'Could not read the model list returned by the provider.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Could not read the model list returned by the provider.', 'v7-ai-chatbot' ) );
 		}
 
 		$models = $this->extract_model_ids( $body );
 
 		if ( empty( $models ) ) {
-			return new WP_Error( 'no_models', __( 'The provider returned no usable chat models for this API key.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'no_models', __( 'The provider returned no usable chat models for this API key.', 'v7-ai-chatbot' ) );
 		}
 
 		sort( $models, SORT_NATURAL | SORT_FLAG_CASE );
@@ -245,7 +245,7 @@ class V7_AI_Chatbot_AI_Provider {
 				if ( function_exists( 'wp_supports_ai' ) && wp_supports_ai() ) {
 					return true;
 				}
-				return new WP_Error( 'wordpress_ai_unavailable', __( 'WordPress AI Client is not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+				return new WP_Error( 'wordpress_ai_unavailable', __( 'WordPress AI Client is not configured', 'v7-ai-chatbot' ) );
 			case 'anthropic':
 				return $this->test_anthropic_connection();
 			case 'openai':
@@ -265,13 +265,13 @@ class V7_AI_Chatbot_AI_Provider {
 			case 'cohere':
 				return $this->test_cohere_connection();
 			default:
-				return new WP_Error( 'unknown_provider', __( 'Unknown provider', V7_AI_CHATBOT_TEXTDOMAIN ) );
+				return new WP_Error( 'unknown_provider', __( 'Unknown provider', 'v7-ai-chatbot' ) );
 		}
 	}
 
 	private function query_wordpress_ai( $message, $context, $settings ) {
 		if ( ! function_exists( 'wp_ai_client_prompt' ) || ! wp_supports_ai() ) {
-			return new WP_Error( 'ai_unavailable', __( 'AI features are not available. Please ask your site administrator to configure an AI provider in WordPress.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'ai_unavailable', __( 'AI features are not available. Please ask your site administrator to configure an AI provider in WordPress.', 'v7-ai-chatbot' ) );
 		}
 
 		try {
@@ -296,7 +296,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key = isset( $api_keys['anthropic'] ) ? $this->security->decrypt_value( $api_keys['anthropic'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Anthropic API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Anthropic API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
@@ -349,7 +349,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! isset( $body['content'][0]['text'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from Anthropic API', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from Anthropic API', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $body['content'][0]['text'] );
@@ -360,7 +360,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key = isset( $api_keys['openai'] ) ? $this->security->decrypt_value( $api_keys['openai'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'OpenAI API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'OpenAI API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
@@ -415,7 +415,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! isset( $body['choices'][0]['message']['content'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from OpenAI API', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from OpenAI API', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $body['choices'][0]['message']['content'] );
@@ -450,13 +450,13 @@ class V7_AI_Chatbot_AI_Provider {
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'api_error', __( 'Ollama API error', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'api_error', __( 'Ollama API error', 'v7-ai-chatbot' ) );
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! isset( $body['response'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from Ollama', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from Ollama', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $body['response'] );
@@ -467,7 +467,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key = isset( $api_keys['anthropic'] ) ? $this->security->decrypt_value( $api_keys['anthropic'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Anthropic API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Anthropic API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$response = wp_remote_get(
@@ -498,7 +498,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key = isset( $api_keys['openai'] ) ? $this->security->decrypt_value( $api_keys['openai'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'OpenAI API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'OpenAI API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$response = wp_remote_get(
@@ -541,7 +541,7 @@ class V7_AI_Chatbot_AI_Provider {
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'api_error', __( 'Cannot connect to Ollama instance', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'api_error', __( 'Cannot connect to Ollama instance', 'v7-ai-chatbot' ) );
 		}
 
 		return true;
@@ -669,7 +669,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys[ $provider_key ] ) ? $this->security->decrypt_value( $api_keys[ $provider_key ] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'API key not configured for the selected provider', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'API key not configured for the selected provider', 'v7-ai-chatbot' ) );
 		}
 
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
@@ -719,7 +719,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! isset( $body['choices'][0]['message']['content'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from AI provider', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from AI provider', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $body['choices'][0]['message']['content'] );
@@ -730,7 +730,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys[ $provider_key ] ) ? $this->security->decrypt_value( $api_keys[ $provider_key ] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'API key not configured for the selected provider', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'API key not configured for the selected provider', 'v7-ai-chatbot' ) );
 		}
 
 		$models_endpoint = str_replace( '/chat/completions', '/models', $endpoint );
@@ -762,7 +762,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys['google'] ) ? $this->security->decrypt_value( $api_keys['google'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Google Gemini API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Google Gemini API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
@@ -809,7 +809,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$text = $body['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
 		if ( null === $text ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from Google Gemini API', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from Google Gemini API', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $text );
@@ -820,7 +820,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys['google'] ) ? $this->security->decrypt_value( $api_keys['google'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Google Gemini API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Google Gemini API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$response = wp_remote_get(
@@ -850,7 +850,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys['cohere'] ) ? $this->security->decrypt_value( $api_keys['cohere'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Cohere API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Cohere API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
@@ -898,7 +898,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$text = $body['message']['content'][0]['text'] ?? null;
 
 		if ( null === $text ) {
-			return new WP_Error( 'invalid_response', __( 'Invalid response from Cohere API', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_response', __( 'Invalid response from Cohere API', 'v7-ai-chatbot' ) );
 		}
 
 		return wp_kses_post( $text );
@@ -909,7 +909,7 @@ class V7_AI_Chatbot_AI_Provider {
 		$api_key  = isset( $api_keys['cohere'] ) ? $this->security->decrypt_value( $api_keys['cohere'] ) : null;
 
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'missing_api_key', __( 'Cohere API key not configured', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'missing_api_key', __( 'Cohere API key not configured', 'v7-ai-chatbot' ) );
 		}
 
 		$response = wp_remote_get(

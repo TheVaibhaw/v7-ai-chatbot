@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: V7 AI Chatbot Pro
+Plugin Name: V7 AI Chatbot
 Plugin URI: https://github.com/TheVaibhaw/v7-ai-chatbot
 Description: Enterprise-grade AI-powered chatbot for WordPress. Supports multiple AI providers with advanced security, analytics, and GDPR compliance.
-Version: 3.2.0
+Version: 1.0.0
 Author: Vaibhaw Kumar
 Author URI: https://vaibhawkumar.in
 License: GPLv2 or later
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('V7_AI_CHATBOT_VERSION', '3.2.0');
+define('V7_AI_CHATBOT_VERSION', '1.0.0');
 define('V7_AI_CHATBOT_PATH', plugin_dir_path(__FILE__));
 define('V7_AI_CHATBOT_URL', plugin_dir_url(__FILE__));
 define('V7_AI_CHATBOT_TEXTDOMAIN', 'v7-ai-chatbot');
@@ -86,11 +86,11 @@ class V7_AI_Chatbot {
 		?>
 		<div class="notice notice-warning is-dismissible">
 			<p>
-				<strong><?php esc_html_e( 'V7 AI Chatbot:', V7_AI_CHATBOT_TEXTDOMAIN ); ?></strong>
+				<strong><?php esc_html_e( 'V7 AI Chatbot:', 'v7-ai-chatbot' ); ?></strong>
 				<?php
 				printf(
 					/* translators: 1: previously configured model ID, 2: newly selected model ID */
-					esc_html__( 'Your AI provider reported that the model "%1$s" is no longer available, so the chatbot automatically switched to "%2$s" to stay online. Review this under API Configuration if you would prefer a different model.', V7_AI_CHATBOT_TEXTDOMAIN ),
+					esc_html__( 'Your AI provider reported that the model "%1$s" is no longer available, so the chatbot automatically switched to "%2$s" to stay online. Review this under API Configuration if you would prefer a different model.', 'v7-ai-chatbot' ),
 					esc_html( $switch['from'] ?? '' ),
 					esc_html( $switch['to'] )
 				);
@@ -101,7 +101,7 @@ class V7_AI_Chatbot {
 	}
 
 	public function load_textdomain() {
-		load_plugin_textdomain( V7_AI_CHATBOT_TEXTDOMAIN, false, dirname( V7_AI_CHATBOT_BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'v7-ai-chatbot', false, dirname( V7_AI_CHATBOT_BASENAME ) . '/languages' );
 	}
 
 	public function activate_plugin() {
@@ -129,8 +129,8 @@ class V7_AI_Chatbot {
 	}
 
 	public function settings_link( $links ) {
-		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=v7-ai-chatbot' ) . '">' . esc_html__( 'Settings', V7_AI_CHATBOT_TEXTDOMAIN ) . '</a>' );
-		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=v7-ai-chatbot-analytics' ) . '">' . esc_html__( 'Analytics', V7_AI_CHATBOT_TEXTDOMAIN ) . '</a>' );
+		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=v7-ai-chatbot' ) . '">' . esc_html__( 'Settings', 'v7-ai-chatbot' ) . '</a>' );
+		array_unshift( $links, '<a href="' . admin_url( 'admin.php?page=v7-ai-chatbot-analytics' ) . '">' . esc_html__( 'Analytics', 'v7-ai-chatbot' ) . '</a>' );
 		return $links;
 	}
 
@@ -140,19 +140,19 @@ class V7_AI_Chatbot {
 
 	public function add_menu() {
 		add_menu_page(
-			esc_html__( 'V7 AI Chatbot', V7_AI_CHATBOT_TEXTDOMAIN ),
-			esc_html__( 'AI Chatbot', V7_AI_CHATBOT_TEXTDOMAIN ),
+			esc_html__( 'V7 AI Chatbot', 'v7-ai-chatbot' ),
+			esc_html__( 'AI Chatbot', 'v7-ai-chatbot' ),
 			'manage_options',
 			'v7-ai-chatbot',
 			[ $this, 'settings_page' ],
-			'dashicons-format-chat',
+			V7_AI_CHATBOT_URL . 'assets/images/menu-icon-20.png',
 			30
 		);
 
 		add_submenu_page(
 			'v7-ai-chatbot',
-			esc_html__( 'Analytics', V7_AI_CHATBOT_TEXTDOMAIN ),
-			esc_html__( 'Analytics', V7_AI_CHATBOT_TEXTDOMAIN ),
+			esc_html__( 'Analytics', 'v7-ai-chatbot' ),
+			esc_html__( 'Analytics', 'v7-ai-chatbot' ),
 			'manage_options',
 			'v7-ai-chatbot-analytics',
 			[ $this, 'analytics_page' ]
@@ -160,8 +160,8 @@ class V7_AI_Chatbot {
 
 		add_submenu_page(
 			'v7-ai-chatbot',
-			esc_html__( 'Conversations', V7_AI_CHATBOT_TEXTDOMAIN ),
-			esc_html__( 'Conversations', V7_AI_CHATBOT_TEXTDOMAIN ),
+			esc_html__( 'Conversations', 'v7-ai-chatbot' ),
+			esc_html__( 'Conversations', 'v7-ai-chatbot' ),
 			'manage_options',
 			'v7-ai-chatbot-conversations',
 			[ $this, 'conversations_page' ]
@@ -169,8 +169,8 @@ class V7_AI_Chatbot {
 
 		add_submenu_page(
 			'v7-ai-chatbot',
-			esc_html__( 'Documentation', V7_AI_CHATBOT_TEXTDOMAIN ),
-			esc_html__( 'Documentation', V7_AI_CHATBOT_TEXTDOMAIN ),
+			esc_html__( 'Documentation', 'v7-ai-chatbot' ),
+			esc_html__( 'Documentation', 'v7-ai-chatbot' ),
 			'manage_options',
 			'v7-ai-chatbot-docs',
 			[ $this, 'documentation_page' ]
@@ -205,8 +205,8 @@ class V7_AI_Chatbot {
 			'primary_color'        => isset( $input['primary_color'] ) ? sanitize_hex_color( $input['primary_color'] ) : '#0073aa',
 			'bubble_color'         => isset( $input['bubble_color'] ) ? sanitize_hex_color( $input['bubble_color'] ) : '#0073aa',
 			'text_color'           => isset( $input['text_color'] ) ? sanitize_hex_color( $input['text_color'] ) : '#ffffff',
-			'greeting'             => isset( $input['greeting'] ) ? sanitize_text_field( $input['greeting'] ) : esc_html__( 'Hi! How can I help you today?', V7_AI_CHATBOT_TEXTDOMAIN ),
-			'placeholder'          => isset( $input['placeholder'] ) ? sanitize_text_field( $input['placeholder'] ) : esc_html__( 'Type your message...', V7_AI_CHATBOT_TEXTDOMAIN ),
+			'greeting'             => isset( $input['greeting'] ) ? sanitize_text_field( $input['greeting'] ) : esc_html__( 'Hi! How can I help you today?', 'v7-ai-chatbot' ),
+			'placeholder'          => isset( $input['placeholder'] ) ? sanitize_text_field( $input['placeholder'] ) : esc_html__( 'Type your message...', 'v7-ai-chatbot' ),
 			'max_tokens'           => isset( $input['max_tokens'] ) ? absint( $input['max_tokens'] ) : 500,
 			'temperature'          => isset( $input['temperature'] ) ? floatval( $input['temperature'] ) : 0.7,
 			'include_pages'        => ! empty( $input['include_pages'] ) ? 1 : 0,
@@ -294,22 +294,25 @@ class V7_AI_Chatbot {
 
 	public function settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized access', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			wp_die( esc_html__( 'Unauthorized access', 'v7-ai-chatbot' ) );
 		}
 
 		$settings = get_option( 'v7_ai_chatbot_settings', $this->get_defaults() );
 		$provider_settings = get_option( 'v7_ai_chatbot_provider_settings', [] );
 		?>
 		<div class="wrap v7-ai-chatbot-admin">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<h1 class="v7-ai-chatbot-title">
+				<img src="<?php echo esc_url( V7_AI_CHATBOT_URL . 'assets/images/logo-128.png' ); ?>" alt="" width="36" height="36" style="vertical-align:middle;margin-right:10px;">
+				<?php echo esc_html( get_admin_page_title() ); ?>
+			</h1>
 			<?php settings_errors( 'v7_ai_chatbot_group' ); ?>
 
 			<nav class="nav-tab-wrapper">
-				<a href="#general" class="nav-tab nav-tab-active"><?php esc_html_e( 'General', V7_AI_CHATBOT_TEXTDOMAIN ); ?></a>
-				<a href="#api" class="nav-tab"><?php esc_html_e( 'API Configuration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></a>
-				<a href="#advanced" class="nav-tab"><?php esc_html_e( 'Advanced Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></a>
-				<a href="#appearance" class="nav-tab"><?php esc_html_e( 'Appearance', V7_AI_CHATBOT_TEXTDOMAIN ); ?></a>
-				<a href="#security" class="nav-tab"><?php esc_html_e( 'Security & Privacy', V7_AI_CHATBOT_TEXTDOMAIN ); ?></a>
+				<a href="#general" class="nav-tab nav-tab-active"><?php esc_html_e( 'General', 'v7-ai-chatbot' ); ?></a>
+				<a href="#api" class="nav-tab"><?php esc_html_e( 'API Configuration', 'v7-ai-chatbot' ); ?></a>
+				<a href="#advanced" class="nav-tab"><?php esc_html_e( 'Advanced Settings', 'v7-ai-chatbot' ); ?></a>
+				<a href="#appearance" class="nav-tab"><?php esc_html_e( 'Appearance', 'v7-ai-chatbot' ); ?></a>
+				<a href="#security" class="nav-tab"><?php esc_html_e( 'Security & Privacy', 'v7-ai-chatbot' ); ?></a>
 			</nav>
 
 			<form method="post" action="options.php">
@@ -318,37 +321,37 @@ class V7_AI_Chatbot {
 				<!-- General Settings Tab -->
 				<div id="general" class="v7-ai-chatbot-tab-content" style="display: block;">
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'General Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'General Settings', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Enable Chatbot', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Enable Chatbot', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[enabled]" value="1" <?php checked( $settings['enabled'], 1 ); ?>>
-										<?php esc_html_e( 'Show chatbot on frontend', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Show chatbot on frontend', 'v7-ai-chatbot' ); ?>
 									</label>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Position', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Position', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<select name="v7_ai_chatbot_settings[position]">
-										<option value="bottom-right" <?php selected( $settings['position'], 'bottom-right' ); ?>><?php esc_html_e( 'Bottom Right', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="bottom-left" <?php selected( $settings['position'], 'bottom-left' ); ?>><?php esc_html_e( 'Bottom Left', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="top-right" <?php selected( $settings['position'], 'top-right' ); ?>><?php esc_html_e( 'Top Right', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="top-left" <?php selected( $settings['position'], 'top-left' ); ?>><?php esc_html_e( 'Top Left', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="bottom-right" <?php selected( $settings['position'], 'bottom-right' ); ?>><?php esc_html_e( 'Bottom Right', 'v7-ai-chatbot' ); ?></option>
+										<option value="bottom-left" <?php selected( $settings['position'], 'bottom-left' ); ?>><?php esc_html_e( 'Bottom Left', 'v7-ai-chatbot' ); ?></option>
+										<option value="top-right" <?php selected( $settings['position'], 'top-right' ); ?>><?php esc_html_e( 'Top Right', 'v7-ai-chatbot' ); ?></option>
+										<option value="top-left" <?php selected( $settings['position'], 'top-left' ); ?>><?php esc_html_e( 'Top Left', 'v7-ai-chatbot' ); ?></option>
 									</select>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Greeting Message', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Greeting Message', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="text" name="v7_ai_chatbot_settings[greeting]" value="<?php echo esc_attr( $settings['greeting'] ); ?>" class="regular-text">
-									<p class="description"><?php esc_html_e( 'Message shown when chatbot first loads', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Message shown when chatbot first loads', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Input Placeholder', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Input Placeholder', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="text" name="v7_ai_chatbot_settings[placeholder]" value="<?php echo esc_attr( $settings['placeholder'] ); ?>" class="regular-text">
 								</td>
@@ -360,33 +363,33 @@ class V7_AI_Chatbot {
 				<!-- API Configuration Tab -->
 				<div id="api" class="v7-ai-chatbot-tab-content">
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'API Provider Configuration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
-						<p class="description" style="margin-bottom: 15px;">🚀 <?php esc_html_e( 'Select from 8+ AI providers with comprehensive model support', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+						<h2><?php esc_html_e( 'API Provider Configuration', 'v7-ai-chatbot' ); ?></h2>
+						<p class="description" style="margin-bottom: 15px;">🚀 <?php esc_html_e( 'Select from 8+ AI providers with comprehensive model support', 'v7-ai-chatbot' ); ?></p>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'AI Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'AI Provider', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<select name="v7_ai_chatbot_provider_settings[provider]" id="v7-ai-provider">
-										<option value="">-- <?php esc_html_e( 'Select Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?> --</option>
-										<option value="wordpress-ai" <?php selected( $provider_settings['provider'] ?? '', 'wordpress-ai' ); ?>>📘 <?php esc_html_e( 'WordPress AI Client (Recommended)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="anthropic" <?php selected( $provider_settings['provider'] ?? '', 'anthropic' ); ?>>🧠 <?php esc_html_e( 'Anthropic Claude', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="openai" <?php selected( $provider_settings['provider'] ?? '', 'openai' ); ?>>🤖 <?php esc_html_e( 'OpenAI GPT', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="google" <?php selected( $provider_settings['provider'] ?? '', 'google' ); ?>>✨ <?php esc_html_e( 'Google Gemini', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="groq" <?php selected( $provider_settings['provider'] ?? '', 'groq' ); ?>>⚙️ <?php esc_html_e( 'Groq - Ultra-Fast LPU (console.groq.com, keys start "gsk_")', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="xai" <?php selected( $provider_settings['provider'] ?? '', 'xai' ); ?>>⚡ <?php esc_html_e( 'xAI Grok - Elon Musk\'s Grok (console.x.ai, keys start "xai-")', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="mistral" <?php selected( $provider_settings['provider'] ?? '', 'mistral' ); ?>>🚀 <?php esc_html_e( 'Mistral AI', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="cohere" <?php selected( $provider_settings['provider'] ?? '', 'cohere' ); ?>>🎯 <?php esc_html_e( 'Cohere', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="meta" <?php selected( $provider_settings['provider'] ?? '', 'meta' ); ?>>🦙 <?php esc_html_e( 'Meta Llama', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
-										<option value="ollama" <?php selected( $provider_settings['provider'] ?? '', 'ollama' ); ?>>🏠 <?php esc_html_e( 'Ollama (Self-Hosted)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></option>
+										<option value="">-- <?php esc_html_e( 'Select Provider', 'v7-ai-chatbot' ); ?> --</option>
+										<option value="wordpress-ai" <?php selected( $provider_settings['provider'] ?? '', 'wordpress-ai' ); ?>>📘 <?php esc_html_e( 'WordPress AI Client (Recommended)', 'v7-ai-chatbot' ); ?></option>
+										<option value="anthropic" <?php selected( $provider_settings['provider'] ?? '', 'anthropic' ); ?>>🧠 <?php esc_html_e( 'Anthropic Claude', 'v7-ai-chatbot' ); ?></option>
+										<option value="openai" <?php selected( $provider_settings['provider'] ?? '', 'openai' ); ?>>🤖 <?php esc_html_e( 'OpenAI GPT', 'v7-ai-chatbot' ); ?></option>
+										<option value="google" <?php selected( $provider_settings['provider'] ?? '', 'google' ); ?>>✨ <?php esc_html_e( 'Google Gemini', 'v7-ai-chatbot' ); ?></option>
+										<option value="groq" <?php selected( $provider_settings['provider'] ?? '', 'groq' ); ?>>⚙️ <?php esc_html_e( 'Groq - Ultra-Fast LPU (console.groq.com, keys start "gsk_")', 'v7-ai-chatbot' ); ?></option>
+										<option value="xai" <?php selected( $provider_settings['provider'] ?? '', 'xai' ); ?>>⚡ <?php esc_html_e( 'xAI Grok - Elon Musk\'s Grok (console.x.ai, keys start "xai-")', 'v7-ai-chatbot' ); ?></option>
+										<option value="mistral" <?php selected( $provider_settings['provider'] ?? '', 'mistral' ); ?>>🚀 <?php esc_html_e( 'Mistral AI', 'v7-ai-chatbot' ); ?></option>
+										<option value="cohere" <?php selected( $provider_settings['provider'] ?? '', 'cohere' ); ?>>🎯 <?php esc_html_e( 'Cohere', 'v7-ai-chatbot' ); ?></option>
+										<option value="meta" <?php selected( $provider_settings['provider'] ?? '', 'meta' ); ?>>🦙 <?php esc_html_e( 'Meta Llama', 'v7-ai-chatbot' ); ?></option>
+										<option value="ollama" <?php selected( $provider_settings['provider'] ?? '', 'ollama' ); ?>>🏠 <?php esc_html_e( 'Ollama (Self-Hosted)', 'v7-ai-chatbot' ); ?></option>
 									</select>
-									<p class="description"><?php esc_html_e( '8 major AI providers with 50+ models available', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( '8 major AI providers with 50+ models available', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Model', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Model', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<select name="v7_ai_chatbot_provider_settings[model]" id="v7-ai-model">
-										<option value="">-- <?php esc_html_e( 'Select a provider first', V7_AI_CHATBOT_TEXTDOMAIN ); ?> --</option>
+										<option value="">-- <?php esc_html_e( 'Select a provider first', 'v7-ai-chatbot' ); ?> --</option>
 										<?php
 										$current_provider = $provider_settings['provider'] ?? '';
 										$current_model = $provider_settings['model'] ?? '';
@@ -404,105 +407,105 @@ class V7_AI_Chatbot {
 										// isn't in the bundled list - otherwise simply opening
 										// this page and saving would silently change the model.
 										if ( '' !== $current_model && ! in_array( $current_model, $listed_model_ids, true ) ) {
-											echo '<option value="' . esc_attr( $current_model ) . '" selected>' . esc_html( $current_model ) . ' ' . esc_html__( '(currently saved)', V7_AI_CHATBOT_TEXTDOMAIN ) . '</option>';
+											echo '<option value="' . esc_attr( $current_model ) . '" selected>' . esc_html( $current_model ) . ' ' . esc_html__( '(currently saved)', 'v7-ai-chatbot' ) . '</option>';
 										}
 										?>
 									</select>
-									<button type="button" class="button button-secondary v7-load-models-btn" style="margin-left:6px;"><?php esc_html_e( '🔄 Load models from my account', V7_AI_CHATBOT_TEXTDOMAIN ); ?></button>
-									<p class="description"><?php esc_html_e( 'The bundled list can go out of date whenever a provider retires a model. Click "Load models from my account" to fetch the exact models your API key can use right now (save your key first).', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<button type="button" class="button button-secondary v7-load-models-btn" style="margin-left:6px;"><?php esc_html_e( '🔄 Load models from my account', 'v7-ai-chatbot' ); ?></button>
+									<p class="description"><?php esc_html_e( 'The bundled list can go out of date whenever a provider retires a model. Click "Load models from my account" to fetch the exact models your API key can use right now (save your key first).', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="anthropic" style="display: none;">
-								<th><?php esc_html_e( 'Anthropic API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Anthropic API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[anthropic]" value="" placeholder="<?php esc_attr_e( 'sk-ant-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">🧠 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> - Required for Claude models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[anthropic]" value="" placeholder="<?php esc_attr_e( 'sk-ant-...', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">🧠 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> - Required for Claude models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="openai" style="display: none;">
-								<th><?php esc_html_e( 'OpenAI API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'OpenAI API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[openai]" value="" placeholder="<?php esc_attr_e( 'sk-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">🤖 <?php echo wp_kses_post( __( 'Get your key from <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noopener">OpenAI Platform</a> - Required for GPT models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[openai]" value="" placeholder="<?php esc_attr_e( 'sk-...', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">🤖 <?php echo wp_kses_post( __( 'Get your key from <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noopener">OpenAI Platform</a> - Required for GPT models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="google" style="display: none;">
-								<th><?php esc_html_e( 'Google Gemini API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Google Gemini API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[google]" value="" placeholder="<?php esc_attr_e( 'Your Google API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">✨ <?php echo wp_kses_post( __( 'Get your key from <a href="https://ai.google.dev/" target="_blank" rel="noopener">Google AI Studio</a> - Required for Gemini models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[google]" value="" placeholder="<?php esc_attr_e( 'Your Google API key', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">✨ <?php echo wp_kses_post( __( 'Get your key from <a href="https://ai.google.dev/" target="_blank" rel="noopener">Google AI Studio</a> - Required for Gemini models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="groq" style="display: none;">
-								<th><?php esc_html_e( 'Groq API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Groq API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[groq]" value="" placeholder="<?php esc_attr_e( 'gsk_...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">⚙️ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> - starts with <code>gsk_</code>. This is <strong>Groq</strong> (ultra-fast LPU inference), <em>not</em> xAI\'s Grok.', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[groq]" value="" placeholder="<?php esc_attr_e( 'gsk_...', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">⚙️ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> - starts with <code>gsk_</code>. This is <strong>Groq</strong> (ultra-fast LPU inference), <em>not</em> xAI\'s Grok.', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="xai" style="display: none;">
-								<th><?php esc_html_e( 'xAI Grok API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'xAI Grok API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[xai]" value="" placeholder="<?php esc_attr_e( 'xai-...', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">⚡ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.x.ai/" target="_blank" rel="noopener">console.x.ai</a> - starts with <code>xai-</code>. This is <strong>xAI\'s Grok</strong>, <em>not</em> Groq — if your key starts with <code>gsk_</code>, select the Groq provider instead.', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[xai]" value="" placeholder="<?php esc_attr_e( 'xai-...', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">⚡ <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.x.ai/" target="_blank" rel="noopener">console.x.ai</a> - starts with <code>xai-</code>. This is <strong>xAI\'s Grok</strong>, <em>not</em> Groq — if your key starts with <code>gsk_</code>, select the Groq provider instead.', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="mistral" style="display: none;">
-								<th><?php esc_html_e( 'Mistral API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Mistral API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[mistral]" value="" placeholder="<?php esc_attr_e( 'Your Mistral API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">🚀 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.mistral.ai/" target="_blank" rel="noopener">Mistral Console</a> - Required for Mistral models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[mistral]" value="" placeholder="<?php esc_attr_e( 'Your Mistral API key', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">🚀 <?php echo wp_kses_post( __( 'Get your key from <a href="https://console.mistral.ai/" target="_blank" rel="noopener">Mistral Console</a> - Required for Mistral models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="cohere" style="display: none;">
-								<th><?php esc_html_e( 'Cohere API Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Cohere API Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[cohere]" value="" placeholder="<?php esc_attr_e( 'Your Cohere API key', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">🎯 <?php echo wp_kses_post( __( 'Get your key from <a href="https://dashboard.cohere.com/" target="_blank" rel="noopener">Cohere Dashboard</a> - Required for Cohere models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[cohere]" value="" placeholder="<?php esc_attr_e( 'Your Cohere API key', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">🎯 <?php echo wp_kses_post( __( 'Get your key from <a href="https://dashboard.cohere.com/" target="_blank" rel="noopener">Cohere Dashboard</a> - Required for Cohere models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr data-api-key-field="meta" style="display: none;">
-								<th><?php esc_html_e( 'Meta Llama Provider Key', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Meta Llama Provider Key', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[meta]" value="" placeholder="<?php esc_attr_e( 'API key for Llama via Together.ai or Replicate', V7_AI_CHATBOT_TEXTDOMAIN ); ?>" class="regular-text">
-									<p class="description">🦙 <?php echo wp_kses_post( __( 'Use <a href="https://together.ai/" target="_blank" rel="noopener">Together.ai</a> or <a href="https://replicate.com/" target="_blank" rel="noopener">Replicate</a> to access Llama models', V7_AI_CHATBOT_TEXTDOMAIN ) ); ?></p>
+									<input type="password" autocomplete="new-password" data-lpignore="true" spellcheck="false" name="v7_ai_chatbot_api_keys[meta]" value="" placeholder="<?php esc_attr_e( 'API key for Llama via Together.ai or Replicate', 'v7-ai-chatbot' ); ?>" class="regular-text">
+									<p class="description">🦙 <?php echo wp_kses_post( __( 'Use <a href="https://together.ai/" target="_blank" rel="noopener">Together.ai</a> or <a href="https://replicate.com/" target="_blank" rel="noopener">Replicate</a> to access Llama models', 'v7-ai-chatbot' ) ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Ollama Self-Hosted URL', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Ollama Self-Hosted URL', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="url" name="v7_ai_chatbot_provider_settings[ollama_api_url]" value="<?php echo esc_attr( $provider_settings['ollama_api_url'] ?? 'http://localhost:11434' ); ?>" class="regular-text" placeholder="http://localhost:11434">
-									<p class="description">🏠 <?php esc_html_e( 'For self-hosted Ollama instance - free and runs locally', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description">🏠 <?php esc_html_e( 'For self-hosted Ollama instance - free and runs locally', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
 					</div>
 
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'Advanced Provider Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'Advanced Provider Settings', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Request Timeout', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Request Timeout', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="number" name="v7_ai_chatbot_provider_settings[timeout]" value="<?php echo esc_attr( $provider_settings['timeout'] ?? 30 ); ?>" min="5" max="120"> <?php esc_html_e( 'seconds', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
-									<p class="description"><?php esc_html_e( 'Maximum time to wait for API responses (5-120 seconds)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<input type="number" name="v7_ai_chatbot_provider_settings[timeout]" value="<?php echo esc_attr( $provider_settings['timeout'] ?? 30 ); ?>" min="5" max="120"> <?php esc_html_e( 'seconds', 'v7-ai-chatbot' ); ?>
+									<p class="description"><?php esc_html_e( 'Maximum time to wait for API responses (5-120 seconds)', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'SSL Certificate Verification', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'SSL Certificate Verification', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_provider_settings[verify_ssl]" value="1" <?php checked( $provider_settings['verify_ssl'] ?? 1, 1 ); ?>>
-										<?php esc_html_e( 'Verify SSL/TLS certificates', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Verify SSL/TLS certificates', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description">🔒 <?php esc_html_e( '✓ Enabled recommended for production (security)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description">🔒 <?php esc_html_e( '✓ Enabled recommended for production (security)', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Connection Test', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Connection Test', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<button type="button" class="button button-secondary v7-test-api-btn"><?php esc_html_e( 'Test Selected Provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></button>
-									<p class="description"><?php esc_html_e( 'Verify your API configuration before deployment', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<button type="button" class="button button-secondary v7-test-api-btn"><?php esc_html_e( 'Test Selected Provider', 'v7-ai-chatbot' ); ?></button>
+									<p class="description"><?php esc_html_e( 'Verify your API configuration before deployment', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
@@ -512,44 +515,44 @@ class V7_AI_Chatbot {
 				<!-- Advanced Settings Tab -->
 				<div id="advanced" class="v7-ai-chatbot-tab-content">
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'Generation Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'Generation Settings', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Max Tokens', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Max Tokens', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="number" name="v7_ai_chatbot_settings[max_tokens]" value="<?php echo esc_attr( $settings['max_tokens'] ); ?>" min="50" max="4096">
-									<p class="description"><?php esc_html_e( 'Maximum response length (higher = longer responses)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Maximum response length (higher = longer responses)', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Temperature', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Temperature', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="number" name="v7_ai_chatbot_settings[temperature]" value="<?php echo esc_attr( $settings['temperature'] ); ?>" min="0" max="2" step="0.1">
-									<p class="description"><?php esc_html_e( '0-2: Lower = focused, Higher = creative', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( '0-2: Lower = focused, Higher = creative', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
 					</div>
 
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'Content Sources', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'Content Sources', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Include Content', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Include Content', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[include_pages]" value="1" <?php checked( $settings['include_pages'], 1 ); ?>>
-										<?php esc_html_e( 'Pages', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Pages', 'v7-ai-chatbot' ); ?>
 									</label><br>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[include_posts]" value="1" <?php checked( $settings['include_posts'], 1 ); ?>>
-										<?php esc_html_e( 'Posts', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Posts', 'v7-ai-chatbot' ); ?>
 									</label><br>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[include_products]" value="1" <?php checked( $settings['include_products'], 1 ); ?>>
-										<?php esc_html_e( 'Products (WooCommerce)', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Products (WooCommerce)', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Select content types to include in AI context', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Select content types to include in AI context', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
@@ -559,27 +562,27 @@ class V7_AI_Chatbot {
 				<!-- Appearance Tab -->
 				<div id="appearance" class="v7-ai-chatbot-tab-content">
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'Appearance', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'Appearance', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Primary Color', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Primary Color', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="color" name="v7_ai_chatbot_settings[primary_color]" value="<?php echo esc_attr( $settings['primary_color'] ); ?>">
-									<p class="description"><?php esc_html_e( 'Main UI color', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Main UI color', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Chat Bubble Color', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Chat Bubble Color', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="color" name="v7_ai_chatbot_settings[bubble_color]" value="<?php echo esc_attr( $settings['bubble_color'] ); ?>">
-									<p class="description"><?php esc_html_e( 'AI response bubble color', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'AI response bubble color', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Text Color', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Text Color', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<input type="color" name="v7_ai_chatbot_settings[text_color]" value="<?php echo esc_attr( $settings['text_color'] ); ?>">
-									<p class="description"><?php esc_html_e( 'Text color in bubbles', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Text color in bubbles', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
@@ -589,61 +592,61 @@ class V7_AI_Chatbot {
 				<!-- Security & Privacy Tab -->
 				<div id="security" class="v7-ai-chatbot-tab-content">
 					<div class="v7-ai-chatbot-card">
-						<h2><?php esc_html_e( 'Security & Privacy', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+						<h2><?php esc_html_e( 'Security & Privacy', 'v7-ai-chatbot' ); ?></h2>
 						<table class="form-table">
 							<tr>
-								<th><?php esc_html_e( 'Enable Logging', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Enable Logging', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[logging_enabled]" value="1" <?php checked( $settings['logging_enabled'], 1 ); ?>>
-										<?php esc_html_e( 'Log conversations for analytics and debugging', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Log conversations for analytics and debugging', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Required for analytics dashboard', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Required for analytics dashboard', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Enable Encryption', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Enable Encryption', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[encryption_enabled]" value="1" <?php checked( $settings['encryption_enabled'], 1 ); ?>>
-										<?php esc_html_e( 'Encrypt sensitive data at rest', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Encrypt sensitive data at rest', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Uses WordPress encryption methods', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Uses WordPress encryption methods', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Enable Rate Limiting', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Enable Rate Limiting', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[rate_limit_enabled]" value="1" <?php checked( $settings['rate_limit_enabled'], 1 ); ?>>
-										<?php esc_html_e( 'Limit queries to prevent abuse', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Limit queries to prevent abuse', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Recommended for production sites', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Recommended for production sites', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Rate Limit Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Rate Limit Settings', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="number" name="v7_ai_chatbot_settings[rate_limit_requests]" value="<?php echo esc_attr( $settings['rate_limit_requests'] ); ?>" min="0"> <?php esc_html_e( 'requests per', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
-									<input type="number" name="v7_ai_chatbot_settings[rate_limit_period]" value="<?php echo esc_attr( $settings['rate_limit_period'] ); ?>" min="0"> <?php esc_html_e( 'seconds', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
-									<p class="description"><?php esc_html_e( 'Example: 10 requests per 3600 seconds (1 hour)', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<input type="number" name="v7_ai_chatbot_settings[rate_limit_requests]" value="<?php echo esc_attr( $settings['rate_limit_requests'] ); ?>" min="0"> <?php esc_html_e( 'requests per', 'v7-ai-chatbot' ); ?>
+									<input type="number" name="v7_ai_chatbot_settings[rate_limit_period]" value="<?php echo esc_attr( $settings['rate_limit_period'] ); ?>" min="0"> <?php esc_html_e( 'seconds', 'v7-ai-chatbot' ); ?>
+									<p class="description"><?php esc_html_e( 'Example: 10 requests per 3600 seconds (1 hour)', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'GDPR Compliance', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'GDPR Compliance', 'v7-ai-chatbot' ); ?></th>
 								<td>
 									<label>
 										<input type="checkbox" name="v7_ai_chatbot_settings[gdpr_compliant]" value="1" <?php checked( $settings['gdpr_compliant'], 1 ); ?>>
-										<?php esc_html_e( 'Enable GDPR-compliant data handling', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
+										<?php esc_html_e( 'Enable GDPR-compliant data handling', 'v7-ai-chatbot' ); ?>
 									</label>
-									<p class="description"><?php esc_html_e( 'Auto-deletes old conversations and provides data export', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<p class="description"><?php esc_html_e( 'Auto-deletes old conversations and provides data export', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 							<tr>
-								<th><?php esc_html_e( 'Auto-Delete Conversations', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+								<th><?php esc_html_e( 'Auto-Delete Conversations', 'v7-ai-chatbot' ); ?></th>
 								<td>
-									<input type="number" name="v7_ai_chatbot_settings[delete_conversations]" value="<?php echo esc_attr( $settings['delete_conversations'] ); ?>" min="0"> <?php esc_html_e( 'days', V7_AI_CHATBOT_TEXTDOMAIN ); ?>
-									<p class="description"><?php esc_html_e( 'Conversations older than this will be deleted', V7_AI_CHATBOT_TEXTDOMAIN ); ?></p>
+									<input type="number" name="v7_ai_chatbot_settings[delete_conversations]" value="<?php echo esc_attr( $settings['delete_conversations'] ); ?>" min="0"> <?php esc_html_e( 'days', 'v7-ai-chatbot' ); ?>
+									<p class="description"><?php esc_html_e( 'Conversations older than this will be deleted', 'v7-ai-chatbot' ); ?></p>
 								</td>
 							</tr>
 						</table>
@@ -654,23 +657,23 @@ class V7_AI_Chatbot {
 			</form>
 
 			<div class="v7-ai-chatbot-card" style="margin-top: 30px;">
-				<h2><?php esc_html_e( 'Quick Stats', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'Quick Stats', 'v7-ai-chatbot' ); ?></h2>
 				<div class="v7-ai-chatbot-stats-grid">
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->get_pages_count() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Pages', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Pages', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->get_posts_count() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Posts', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Posts', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->get_products_count() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Products', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Products', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->analytics->get_total_conversations() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Conversations', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Conversations', 'v7-ai-chatbot' ); ?></div>
 					</div>
 				</div>
 			</div>
@@ -680,34 +683,34 @@ class V7_AI_Chatbot {
 
 	public function analytics_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized access', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			wp_die( esc_html__( 'Unauthorized access', 'v7-ai-chatbot' ) );
 		}
 		?>
 		<div class="wrap v7-ai-chatbot-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div class="v7-ai-chatbot-card">
-				<h2><?php esc_html_e( 'Conversation Analytics', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'Conversation Analytics', 'v7-ai-chatbot' ); ?></h2>
 				<div class="v7-ai-chatbot-stats-grid">
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->analytics->get_total_conversations() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Total Conversations', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Total Conversations', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->analytics->get_total_messages() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Messages Processed', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Messages Processed', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( $this->analytics->get_avg_messages_per_conversation() ); ?></div>
-						<div class="stat-label"><?php esc_html_e( 'Avg. Messages/Chat', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Avg. Messages/Chat', 'v7-ai-chatbot' ); ?></div>
 					</div>
 					<div class="v7-ai-chatbot-stat">
 						<div class="stat-number"><?php echo esc_html( number_format( $this->analytics->get_avg_response_time(), 2 ) ); ?>ms</div>
-						<div class="stat-label"><?php esc_html_e( 'Avg. Response Time', V7_AI_CHATBOT_TEXTDOMAIN ); ?></div>
+						<div class="stat-label"><?php esc_html_e( 'Avg. Response Time', 'v7-ai-chatbot' ); ?></div>
 					</div>
 				</div>
 			</div>
 			<div class="v7-ai-chatbot-card">
-				<h2><?php esc_html_e( 'Recent Conversations', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'Recent Conversations', 'v7-ai-chatbot' ); ?></h2>
 				<?php $this->display_conversations_table( 10 ); ?>
 			</div>
 		</div>
@@ -716,13 +719,13 @@ class V7_AI_Chatbot {
 
 	public function conversations_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized access', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			wp_die( esc_html__( 'Unauthorized access', 'v7-ai-chatbot' ) );
 		}
 		?>
 		<div class="wrap v7-ai-chatbot-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div class="v7-ai-chatbot-card">
-				<h2><?php esc_html_e( 'All Conversations', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'All Conversations', 'v7-ai-chatbot' ); ?></h2>
 				<?php $this->display_conversations_table( 50 ); ?>
 			</div>
 		</div>
@@ -731,29 +734,29 @@ class V7_AI_Chatbot {
 
 	public function documentation_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized access', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			wp_die( esc_html__( 'Unauthorized access', 'v7-ai-chatbot' ) );
 		}
 		?>
 		<div class="wrap v7-ai-chatbot-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div class="v7-ai-chatbot-card">
-				<h2><?php esc_html_e( 'Setup Guide', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'Setup Guide', 'v7-ai-chatbot' ); ?></h2>
 				<ol>
-					<li><?php esc_html_e( 'Go to Settings tab and enable the chatbot', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><?php esc_html_e( 'Configure API provider in API Configuration tab', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><?php esc_html_e( 'Set up your API keys for chosen provider', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><?php esc_html_e( 'Configure content sources in Advanced Settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><?php esc_html_e( 'Customize appearance and security settings', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><?php esc_html_e( 'Save changes and test on frontend', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
+					<li><?php esc_html_e( 'Go to Settings tab and enable the chatbot', 'v7-ai-chatbot' ); ?></li>
+					<li><?php esc_html_e( 'Configure API provider in API Configuration tab', 'v7-ai-chatbot' ); ?></li>
+					<li><?php esc_html_e( 'Set up your API keys for chosen provider', 'v7-ai-chatbot' ); ?></li>
+					<li><?php esc_html_e( 'Configure content sources in Advanced Settings', 'v7-ai-chatbot' ); ?></li>
+					<li><?php esc_html_e( 'Customize appearance and security settings', 'v7-ai-chatbot' ); ?></li>
+					<li><?php esc_html_e( 'Save changes and test on frontend', 'v7-ai-chatbot' ); ?></li>
 				</ol>
 			</div>
 			<div class="v7-ai-chatbot-card">
-				<h2><?php esc_html_e( 'Supported Providers', V7_AI_CHATBOT_TEXTDOMAIN ); ?></h2>
+				<h2><?php esc_html_e( 'Supported Providers', 'v7-ai-chatbot' ); ?></h2>
 				<ul>
-					<li><strong>WordPress AI Client:</strong> <?php esc_html_e( 'Uses WordPress native AI integration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><strong>Anthropic Claude:</strong> <?php esc_html_e( 'State-of-the-art reasoning model', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><strong>OpenAI GPT:</strong> <?php esc_html_e( 'Powerful and reliable models', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
-					<li><strong>Ollama:</strong> <?php esc_html_e( 'Self-hosted local models', V7_AI_CHATBOT_TEXTDOMAIN ); ?></li>
+					<li><strong>WordPress AI Client:</strong> <?php esc_html_e( 'Uses WordPress native AI integration', 'v7-ai-chatbot' ); ?></li>
+					<li><strong>Anthropic Claude:</strong> <?php esc_html_e( 'State-of-the-art reasoning model', 'v7-ai-chatbot' ); ?></li>
+					<li><strong>OpenAI GPT:</strong> <?php esc_html_e( 'Powerful and reliable models', 'v7-ai-chatbot' ); ?></li>
+					<li><strong>Ollama:</strong> <?php esc_html_e( 'Self-hosted local models', 'v7-ai-chatbot' ); ?></li>
 				</ul>
 			</div>
 		</div>
@@ -766,17 +769,17 @@ class V7_AI_Chatbot {
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'ID', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
-					<th><?php esc_html_e( 'User IP', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
-					<th><?php esc_html_e( 'Messages', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
-					<th><?php esc_html_e( 'Duration', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
-					<th><?php esc_html_e( 'Start Time', V7_AI_CHATBOT_TEXTDOMAIN ); ?></th>
+					<th><?php esc_html_e( 'ID', 'v7-ai-chatbot' ); ?></th>
+					<th><?php esc_html_e( 'User IP', 'v7-ai-chatbot' ); ?></th>
+					<th><?php esc_html_e( 'Messages', 'v7-ai-chatbot' ); ?></th>
+					<th><?php esc_html_e( 'Duration', 'v7-ai-chatbot' ); ?></th>
+					<th><?php esc_html_e( 'Start Time', 'v7-ai-chatbot' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php if ( empty( $conversations ) ) : ?>
 					<tr>
-						<td colspan="5"><?php esc_html_e( 'No conversations yet', V7_AI_CHATBOT_TEXTDOMAIN ); ?></td>
+						<td colspan="5"><?php esc_html_e( 'No conversations yet', 'v7-ai-chatbot' ); ?></td>
 					</tr>
 				<?php else : ?>
 					<?php foreach ( $conversations as $conv ) : ?>
@@ -811,8 +814,8 @@ class V7_AI_Chatbot {
 			'primary_color'        => '#0073aa',
 			'bubble_color'         => '#0073aa',
 			'text_color'           => '#ffffff',
-			'greeting'             => esc_html__( 'Hi! How can I help you today?', V7_AI_CHATBOT_TEXTDOMAIN ),
-			'placeholder'          => esc_html__( 'Type your message...', V7_AI_CHATBOT_TEXTDOMAIN ),
+			'greeting'             => esc_html__( 'Hi! How can I help you today?', 'v7-ai-chatbot' ),
+			'placeholder'          => esc_html__( 'Type your message...', 'v7-ai-chatbot' ),
 			'max_tokens'           => 500,
 			'temperature'          => 0.7,
 			'include_pages'        => 1,
@@ -901,14 +904,14 @@ class V7_AI_Chatbot {
 
 	public function handle_query() {
 		if ( ! check_ajax_referer( 'v7_ai_chatbot_nonce', 'nonce', false ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'v7-ai-chatbot' ) ] );
 		}
 
 		$message = isset( $_POST['message'] ) ? sanitize_text_field( wp_unslash( $_POST['message'] ) ) : '';
 		$conversation_id = isset( $_POST['conversation_id'] ) ? sanitize_text_field( wp_unslash( $_POST['conversation_id'] ) ) : '';
 
 		if ( empty( $message ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Please enter a message', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Please enter a message', 'v7-ai-chatbot' ) ] );
 		}
 
 		$settings = get_option( 'v7_ai_chatbot_settings', $this->get_defaults() );
@@ -916,7 +919,7 @@ class V7_AI_Chatbot {
 		// Check rate limiting
 		if ( ! empty( $settings['rate_limit_enabled'] ) ) {
 			if ( ! $this->security->check_rate_limit( $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $settings['rate_limit_requests'], $settings['rate_limit_period'] ) ) {
-				wp_send_json_error( [ 'message' => esc_html__( 'Too many requests. Please wait before sending another message.', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+				wp_send_json_error( [ 'message' => esc_html__( 'Too many requests. Please wait before sending another message.', 'v7-ai-chatbot' ) ] );
 			}
 		}
 
@@ -936,7 +939,7 @@ class V7_AI_Chatbot {
 
 			$visible_message = current_user_can( 'manage_options' )
 				? $response->get_error_message()
-				: esc_html__( 'Sorry, I am unable to answer right now. Please try again later.', V7_AI_CHATBOT_TEXTDOMAIN );
+				: esc_html__( 'Sorry, I am unable to answer right now. Please try again later.', 'v7-ai-chatbot' );
 
 			wp_send_json_error( [ 'message' => $visible_message ] );
 		}
@@ -954,11 +957,11 @@ class V7_AI_Chatbot {
 
 	public function handle_settings_ajax() {
 		if ( ! check_ajax_referer( 'v7_ai_chatbot_nonce', 'nonce', false ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page and try again.', 'v7-ai-chatbot' ) ] );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+			wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized', 'v7-ai-chatbot' ) ] );
 		}
 
 		$action = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
@@ -971,7 +974,7 @@ class V7_AI_Chatbot {
 			case 'fetch_models':
 				$provider = isset( $_POST['provider'] ) ? sanitize_text_field( wp_unslash( $_POST['provider'] ) ) : '';
 				if ( '' === $provider ) {
-					wp_send_json_error( [ 'message' => esc_html__( 'Please select a provider first.', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+					wp_send_json_error( [ 'message' => esc_html__( 'Please select a provider first.', 'v7-ai-chatbot' ) ] );
 				}
 
 				$models = $this->ai_provider->get_available_models( $provider );
@@ -982,14 +985,14 @@ class V7_AI_Chatbot {
 				wp_send_json_success( [
 					'models'  => $models,
 					/* translators: %d: number of models returned by the provider */
-					'message' => sprintf( esc_html__( 'Loaded %d models available to your API key.', V7_AI_CHATBOT_TEXTDOMAIN ), count( $models ) ),
+					'message' => sprintf( esc_html__( 'Loaded %d models available to your API key.', 'v7-ai-chatbot' ), count( $models ) ),
 				] );
 				break;
 			case 'export_data':
 				$this->export_user_data();
 				break;
 			default:
-				wp_send_json_error( [ 'message' => esc_html__( 'Invalid action', V7_AI_CHATBOT_TEXTDOMAIN ) ] );
+				wp_send_json_error( [ 'message' => esc_html__( 'Invalid action', 'v7-ai-chatbot' ) ] );
 		}
 	}
 
@@ -1008,7 +1011,7 @@ class V7_AI_Chatbot {
 
 		return [
 			'success' => true,
-			'message' => esc_html__( 'API connection successful!', V7_AI_CHATBOT_TEXTDOMAIN ),
+			'message' => esc_html__( 'API connection successful!', 'v7-ai-chatbot' ),
 		];
 	}
 

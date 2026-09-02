@@ -574,15 +574,15 @@ class V7_AI_Chatbot_Provider_Models {
 
 	public static function validate_api_key( $provider, $api_key ) {
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'empty_key', esc_html__( 'API key cannot be empty.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'empty_key', esc_html__( 'API key cannot be empty.', 'v7-ai-chatbot' ) );
 		}
 
 		if ( preg_match( '/\s/', $api_key ) ) {
-			return new WP_Error( 'invalid_key', esc_html__( 'That value contains spaces, so it is not a valid API key. Please paste the key exactly as shown in your provider dashboard.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_key', esc_html__( 'That value contains spaces, so it is not a valid API key. Please paste the key exactly as shown in your provider dashboard.', 'v7-ai-chatbot' ) );
 		}
 
 		if ( strlen( $api_key ) < 16 ) {
-			return new WP_Error( 'invalid_key', esc_html__( 'That value is too short to be a valid API key. Please paste the full key from your provider dashboard.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+			return new WP_Error( 'invalid_key', esc_html__( 'That value is too short to be a valid API key. Please paste the full key from your provider dashboard.', 'v7-ai-chatbot' ) );
 		}
 
 		$expected_prefixes = [
@@ -625,7 +625,7 @@ class V7_AI_Chatbot_Provider_Models {
 				'wrong_provider_key',
 				sprintf(
 					/* translators: 1: detected provider name, 2: detected key prefix, 3: selected provider name, 4: selected provider's console URL, 5: selected provider's key prefix */
-					esc_html__( 'This looks like a %1$s API key (it starts with "%2$s"), but the selected provider is %3$s. These are different services - either switch the "AI Provider" dropdown to %1$s, or paste a %3$s key from %4$s (those start with "%5$s").', V7_AI_CHATBOT_TEXTDOMAIN ),
+					esc_html__( 'This looks like a %1$s API key (it starts with "%2$s"), but the selected provider is %3$s. These are different services - either switch the "AI Provider" dropdown to %1$s, or paste a %3$s key from %4$s (those start with "%5$s").', 'v7-ai-chatbot' ),
 					$detected['label'],
 					$detected['prefix'],
 					$expected['label'],
@@ -639,7 +639,7 @@ class V7_AI_Chatbot_Provider_Models {
 			'invalid_key',
 			sprintf(
 				/* translators: 1: provider name, 2: expected key prefix, 3: provider console URL */
-				esc_html__( 'That does not look like a %1$s API key - they start with "%2$s". Get yours from %3$s, and make sure your browser did not auto-fill a saved password into this field.', V7_AI_CHATBOT_TEXTDOMAIN ),
+				esc_html__( 'That does not look like a %1$s API key - they start with "%2$s". Get yours from %3$s, and make sure your browser did not auto-fill a saved password into this field.', 'v7-ai-chatbot' ),
 				$expected['label'],
 				$expected['prefix'],
 				$expected['console']

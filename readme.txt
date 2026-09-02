@@ -1,129 +1,146 @@
 === V7 AI Chatbot ===
 Contributors: thevaibhaw
-Tags: chatbot, ai, customer support, ai chatbot, site assistant
-Requires at least: 7.0
+Tags: chatbot, ai, customer support, woocommerce, assistant
+Requires at least: 6.7
 Tested up to: 7.0
-Requires PHP: 7.4
-Stable tag: 2.0.0
+Requires PHP: 8.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI-powered chatbot for WordPress. Provides intelligent customer support using your site content with the WordPress AI Client.
+AI chatbot that answers visitor questions using only your own site content, with your choice of AI provider and encrypted API key storage.
 
 == Description ==
 
-V7 AI Chatbot is an intelligent customer support solution that answers questions exclusively about your website content. It uses the WordPress AI Client, which means your site owner controls which AI provider is used — supporting multiple providers without requiring the plugin to know about them directly.
+V7 AI Chatbot adds a support assistant to your site that answers questions using **only your published website content** — your pages, posts and WooCommerce products. It is built to stay on-topic and to avoid disclosing anything private.
 
-= Key Features =
+You choose the AI provider and model. API keys are encrypted before being stored in your database, and the plugin never ships with or requires any hardcoded key.
 
-* AI-powered responses via the WordPress AI Client
-* Site-specific answers only — won't respond to off-topic queries
-* Indexes pages, posts, and WooCommerce products
-* Fully customizable appearance
-* Responsive mobile-friendly design
-* Clean, optimized code
-* Easy setup with admin panel
-* Multiple color customization options
-* Adjustable position (bottom-right or bottom-left)
-* Customizable greeting and placeholder text
-* Secure AJAX implementation with nonces
-* Compatible with any AI provider configured in WordPress
+= Supported AI providers =
 
-= Use Cases =
+* WordPress AI Client (uses whatever provider WordPress itself is configured with)
+* Anthropic Claude
+* OpenAI GPT
+* Google Gemini
+* Groq (ultra-fast LPU inference)
+* xAI Grok
+* Mistral AI
+* Cohere
+* Meta Llama (via Together.ai)
+* Ollama (self-hosted, no third-party service)
 
-* Customer support automation
-* Product information assistance
-* Site navigation help
-* Content discovery
-* FAQ automation
+= Model list stays current =
 
-= Requirements =
+Providers retire and rename models regularly. Instead of relying on a bundled list that goes stale, the settings screen can fetch the exact models your own API key is allowed to use, directly from the provider. If a configured model is retired, the plugin detects it, switches to a working model automatically and tells you it did so — so your chatbot does not go down.
 
-* WordPress 5.0+ (WordPress 7.0+ with AI provider configured recommended for full functionality)
-* PHP 7.4+
-* An AI provider configured in WordPress 7.0+ settings
+= Privacy and data protection =
+
+The plugin is deliberately conservative about what leaves your server:
+
+* Only **published, publicly visible** content is used. Password-protected posts, private posts, drafts and products hidden from your catalog are excluded.
+* Post meta, user accounts, customer records and WooCommerce orders are **never read**, so sales counts, revenue, stock levels and customer details cannot be sent anywhere.
+* Before any prompt is sent, a scrubbing pass redacts anything resembling an email address, API key, access token, labelled password or long card-like number.
+* The assistant is instructed to refuse requests for credentials, login or admin URLs, staff details, customer or order information, and to ignore visitor attempts to override those rules.
+* Internal error details are shown only to administrators; visitors receive a neutral message.
+
+= Security =
+
+* API keys are encrypted at rest using AES-256-CBC with a key derived from your site's own WordPress salts. No static or shared key is used.
+* Saved keys are never redisplayed in the admin screen, and browser password managers are blocked from auto-filling the key fields.
+* Keys are format-validated before saving, so pasting the wrong provider's key (or an auto-filled password) is rejected with a clear message instead of failing silently later.
+* All AJAX endpoints are nonce-verified, and administrative actions require the `manage_options` capability.
+* All database queries use prepared statements; all output is escaped.
 
 == Installation ==
 
-1. Upload plugin files to `/wp-content/plugins/v7-ai-chatbot/`
-2. Activate the plugin through Plugins menu
-3. Configure an AI provider in WordPress settings (WordPress 7.0+ required)
-4. Go to V7 AI Chatbot settings
-5. Adjust generation settings (max tokens, temperature)
-6. Select content sources (pages, posts, products)
-7. Enable the chatbot
-8. Customize appearance to match your brand
+1. Upload the plugin files to `/wp-content/plugins/v7-ai-chatbot/`, or install it through the Plugins screen.
+2. Activate the plugin through the Plugins menu.
+3. Go to **AI Chatbot > API Configuration**.
+4. Choose your AI provider and paste that provider's API key. (Note: **Groq** keys start with `gsk_` and come from console.groq.com; **xAI Grok** keys start with `xai-` and come from console.x.ai — these are different companies.)
+5. Save changes, then click **Load models from my account** and pick a model.
+6. Click **Test Selected Provider** to confirm the key works.
+7. On the **General** tab, enable the chatbot.
+8. Optionally choose which content types to index and customize the appearance.
 
 == Frequently Asked Questions ==
 
-= Which AI providers are supported? =
+= Do I need my own API key? =
 
-This plugin works with any AI provider configured in WordPress 7.0+. The provider is set at the WordPress level, not in the plugin settings. Check your WordPress settings for available AI provider options.
+Yes, for every provider except Ollama (self-hosted) and the WordPress AI Client option. The plugin does not include or provide API access; you use your own account with the provider you choose.
 
-= Will it answer questions not related to my site? =
+= Will it answer questions unrelated to my site? =
 
-No, the chatbot is specifically configured to only answer questions about your website content. It will politely decline off-topic queries.
+No. The assistant is instructed to answer only from your indexed site content and to decline anything else, including attempts to talk it out of those instructions.
 
-= What content can it access? =
+= Can it leak customer, order or sales data? =
 
-The chatbot can access your published pages, posts, and WooCommerce products (if enabled in settings).
+No. The plugin never reads post meta, user accounts or WooCommerce orders, so that data is not available to it in the first place. It also never includes stock levels or how many times a product has sold.
 
-= Is it mobile responsive? =
+= Is password-protected content used? =
 
-Yes, the chatbot is fully responsive and works perfectly on all devices.
+No. Password-protected, private and unpublished content is excluded, as are WooCommerce products whose catalog visibility is set to hidden.
 
-= Can I customize the appearance? =
+= Where are my API keys stored? =
 
-Yes, you can customize colors, position, greeting message, and placeholder text from the admin panel.
+Encrypted in your own WordPress database, using a key derived from your site's WordPress salts. They are never written to files, never displayed back in the admin screen, and never logged.
+
+= What happens if my provider retires the model I selected? =
+
+The plugin detects the error, asks your provider which models your key can use, switches to a working one, retries the request, and shows you an admin notice explaining the change.
 
 = Does it work with WooCommerce? =
 
-Yes, you can enable product indexing to help customers with product-related questions.
+Yes. Enable product indexing to let the assistant answer questions about your published products, including their public prices.
 
-= What WordPress version do I need? =
+= Are conversations stored? =
 
-WordPress 5.0+ will run the plugin, but WordPress 7.0+ is required for AI features to work (due to the AI Client API).
-
-= Is my data secure? =
-
-Yes, all communications are secured with WordPress nonces and sanitized inputs. Data handling depends on the AI provider configured in your WordPress settings. Consult your provider's privacy policy for details.
-
-== Screenshots ==
-
-1. Admin settings panel
-2. Chatbot widget on frontend
-3. Chat conversation example
-4. Customization options
+Only if you enable logging (it is on by default and can be turned off under Security & Privacy). See the Privacy section below for exactly what is stored.
 
 == Changelog ==
 
-= 2.0.0 =
-* Migrated to WordPress 7.0 AI Client API
-* Removed direct third-party provider integrations (Groq, Gemini, OpenAI)
-* Plugin now uses site-wide AI provider configuration
-* Removed API key and provider selection from plugin settings
-* Simplified setup process
-* Improved security and maintainability
-
 = 1.0.0 =
-* Initial release
-* Groq, Google Gemini, and OpenAI integration
-* Content indexing system
-* Customizable appearance
-* Responsive design
-* Admin settings panel
+* Initial public release
+* Support for WordPress AI Client, Anthropic Claude, OpenAI, Google Gemini, Groq, xAI Grok, Mistral, Cohere, Meta Llama (via Together.ai) and self-hosted Ollama
+* Live model loading from your provider, so the model list never goes stale
+* Automatic recovery if a provider retires your configured model
+* API keys encrypted at rest with AES-256-CBC keyed from your site salts
+* API key format validation, including detection of a key pasted for the wrong provider
+* Password-protected content, private content and hidden WooCommerce products excluded from AI context
+* Secrets and contact details redacted from prompts before they are sent
+* System prompt hardened against prompt-injection and data-disclosure requests
+* Optional conversation logging with configurable retention and IP masking
 
 == Source Code ==
 
-The source code for this plugin is fully open-source and human-readable. All JavaScript and CSS assets are included in their unminified, human-readable formats under the `assets/` directory.
-
-The repository and development source code are publicly hosted at:
+All JavaScript and CSS is shipped unminified and human-readable under the `assets/` directory. Development happens publicly at:
 https://github.com/TheVaibhaw/v7-ai-chatbot
 
 == External services ==
 
-This plugin uses the WordPress AI Client API (available in WordPress 7.0+) to send user queries to an AI provider configured at the WordPress level. When a visitor uses the chatbot, user messages and your site content (pages, posts, and/or products as configured in the plugin settings) are processed by whichever AI provider your site owner has configured in WordPress.
+This plugin sends data to a third-party AI provider **only when you configure one and a visitor uses the chatbot**. You choose which provider; only the one you select is contacted.
 
-The specific AI provider, service endpoints, and data handling practices depend on the provider configured in WordPress settings. Consult the documentation and privacy policies of your configured AI provider for details about data handling and service terms.
+What is sent: the visitor's chat message, plus context assembled from your published pages, posts and/or products (whichever you enable), plus your site name and description. Password-protected and private content, post meta, user data and WooCommerce order data are never included, and likely secrets or contact details are redacted before sending.
 
-This plugin stores no data beyond the chatbot settings in the WordPress database. It does not collect user data, track visitors, or store conversation history. Credential management and provider selection are handled entirely by WordPress core, not by this plugin.
+Depending on your selection, requests go to one of:
+
+* Anthropic — https://api.anthropic.com — [Terms](https://www.anthropic.com/legal/commercial-terms) / [Privacy](https://www.anthropic.com/legal/privacy)
+* OpenAI — https://api.openai.com — [Terms](https://openai.com/policies/terms-of-use/) / [Privacy](https://openai.com/policies/privacy-policy/)
+* Google Gemini — https://generativelanguage.googleapis.com — [Terms](https://ai.google.dev/gemini-api/terms) / [Privacy](https://policies.google.com/privacy)
+* Groq — https://api.groq.com — [Terms](https://groq.com/terms-of-use/) / [Privacy](https://groq.com/privacy-policy/)
+* xAI — https://api.x.ai — [Terms](https://x.ai/legal/terms-of-service) / [Privacy](https://x.ai/legal/privacy-policy)
+* Mistral AI — https://api.mistral.ai — [Terms](https://mistral.ai/terms/) / [Privacy](https://mistral.ai/terms/#privacy-policy)
+* Cohere — https://api.cohere.com — [Terms](https://cohere.com/terms-of-use) / [Privacy](https://cohere.com/privacy)
+* Together.ai (for Meta Llama models) — https://api.together.xyz — [Terms](https://www.together.ai/terms-of-service) / [Privacy](https://www.together.ai/privacy)
+* Ollama — your own self-hosted URL. No third-party service is contacted.
+
+The plugin also contacts your selected provider's model-list endpoint when you click "Test Selected Provider" or "Load models from my account" in the admin screen. Those requests send only your API key for authentication.
+
+== Privacy ==
+
+With conversation logging enabled (default, and switchable under Security & Privacy), this plugin creates database tables in your own site and stores:
+
+* chat messages and the assistant's replies
+* the visitor's IP address
+* timestamps and per-conversation message counts
+
+This data stays in your database and is not transmitted anywhere by the plugin. IP addresses are masked when displayed in the admin. You can set an automatic retention period in days, and disable logging entirely. All tables and settings are removed when the plugin is uninstalled.
