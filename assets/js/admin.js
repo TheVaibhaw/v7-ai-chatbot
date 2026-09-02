@@ -10,6 +10,66 @@
 			this.setupTestConnection();
 			this.setupExportData();
 			this.setupProviderSelector();
+			this.setupLoadModels();
+		},
+
+		// Replaces the bundled model list with the models the saved API key
+		// can actually use, so a provider retiring a model ID can't leave the
+		// chatbot pointing at something that no longer exists.
+		setupLoadModels: function () {
+			const self = this;
+			$(document).on('click', '.v7-load-models-btn', function (e) {
+				e.preventDefault();
+				const button = $(this);
+				const originalText = button.text();
+				const provider = $('#v7-ai-provider').val();
+
+				if (!provider) {
+					self.showNotice('error', 'Please select an AI provider first.');
+					return;
+				}
+
+				button.prop('disabled', true).html('<span class="v7-ai-chatbot-loader"></span> Loading...');
+
+				$.ajax({
+					url: ajaxurl,
+					type: 'POST',
+					data: {
+						action: 'v7_ai_chatbot_settings',
+						action_type: 'fetch_models',
+						provider: provider,
+						nonce: (typeof v7AiChatbotAdminParams !== 'undefined' ? v7AiChatbotAdminParams.nonce : ''),
+					},
+					success: function (response) {
+						if (!response || !response.success || !response.data || !response.data.models) {
+							const msg = (response && response.data && response.data.message) || 'Could not load models.';
+							self.showNotice('error', msg);
+							return;
+						}
+
+						const select = $('#v7-ai-model');
+						const previous = select.val();
+						select.empty();
+
+						response.data.models.forEach(function (id) {
+							$('<option>').attr('value', id).text(id).appendTo(select);
+						});
+
+						// Keep the existing choice if the provider still offers it.
+						if (previous && response.data.models.indexOf(previous) !== -1) {
+							select.val(previous);
+						}
+
+						self.showNotice('success', response.data.message + ' Pick one and click Save Changes.');
+					},
+					error: function () {
+						self.showNotice('error', 'Failed to load models from the provider.');
+					},
+					complete: function () {
+						button.prop('disabled', false).text(originalText);
+					},
+				});
+			});
 		},
 
 		setupTabs: function () {
@@ -17,47 +77,61 @@
 			$('.nav-tab').on('click', function (e) {
 				e.preventDefault();
 				const target = $(this).attr('href');
-
-				// Hide all tabs
 				$('.v7-ai-chatbot-tab-content').hide();
 				$('.nav-tab').removeClass('nav-tab-active');
-
-				// Show selected tab
 				$(target).show();
 				$(this).addClass('nav-tab-active');
-
-				// Save preference
 				localStorage.setItem('v7AIChatbotActiveTab', target);
 			});
 
-			// Restore last active tab
 			const activeTab = localStorage.getItem('v7AIChatbotActiveTab') || '#general';
-			$(activeTab).show();
-			$('[href="' + activeTab + '"]').addClass('nav-tab-active');
+			if ($(activeTab).length) {
+				$('.v7-ai-chatbot-tab-content').hide();
+				$('.nav-tab').removeClass('nav-tab-active');
+				$(activeTab).show();
+				$('[href="' + activeTab + '"]').addClass('nav-tab-active');
+			}
 		},
 
 		setupProviderSelector: function () {
 			const self = this;
+			// Changing provider resets to that provider's default model...
 			$('#v7-ai-provider').on('change', function () {
-				self.updateProviderInfo($(this).val());
-				// Also update field visibility
+				self.updateProviderInfo($(this).val(), false);
 				if (typeof V7AIProviderModels !== 'undefined') {
 					V7AIProviderModels.updateAPIKeyFields($(this).val());
 				}
+				self.markSavedKeyField($(this).val());
 			});
 
-			// Initialize on page load
+			// ...but simply loading the page must keep the saved model.
 			const currentProvider = $('#v7-ai-provider').val();
 			if (currentProvider) {
-				self.updateProviderInfo(currentProvider);
-				// Also update field visibility on load
+				self.updateProviderInfo(currentProvider, true);
 				if (typeof V7AIProviderModels !== 'undefined') {
 					V7AIProviderModels.updateAPIKeyFields(currentProvider);
 				}
+				self.markSavedKeyField(currentProvider);
 			}
 		},
 
-		updateProviderInfo: function (provider) {
+		markSavedKeyField: function (provider) {
+			const savedProviders = (typeof v7AiChatbotAdminParams !== 'undefined' && v7AiChatbotAdminParams.savedKeyProviders) || [];
+			const row = $('[data-api-key-field="' + provider + '"]');
+			if (!row.length) return;
+
+			row.find('.v7-key-saved-hint').remove();
+
+			if (savedProviders.indexOf(provider) !== -1) {
+				row.find('input[type="password"]').after(
+					'<p class="v7-key-saved-hint description" style="color:#0a7c2f;">✓ ' +
+					'A key is already saved for this provider. Leave this field blank to keep it, or enter a new key to replace it.' +
+					'</p>'
+				);
+			}
+		},
+
+		updateProviderInfo: function (provider, preserveModelSelection) {
 			const providerData = V7AIProviderModels.providers[provider];
 			if (!providerData) return;
 
@@ -80,9 +154,8 @@
 				$('#v7-ai-provider').closest('td').append(infoHTML);
 			}
 
-			// Update model dropdown
 			if (typeof V7AIProviderModels !== 'undefined') {
-				V7AIProviderModels.updateModels(provider);
+				V7AIProviderModels.updateModels(provider, !!preserveModelSelection);
 			}
 		},
 
@@ -109,7 +182,7 @@
 					data: {
 						action: 'v7_ai_chatbot_settings',
 						action_type: 'test_api',
-						nonce: $('[name="_wpnonce"]').val(),
+						nonce: (typeof v7AiChatbotAdminParams !== 'undefined' ? v7AiChatbotAdminParams.nonce : ''),
 					},
 					success: function (response) {
 						if (response.success) {
@@ -143,10 +216,9 @@
 					data: {
 						action: 'v7_ai_chatbot_settings',
 						action_type: 'export_data',
-						nonce: $('[name="_wpnonce"]').val(),
+						nonce: (typeof v7AiChatbotAdminParams !== 'undefined' ? v7AiChatbotAdminParams.nonce : ''),
 					},
 					success: function (response) {
-						// Trigger file download
 						const dataStr = JSON.stringify(response, null, 2);
 						const dataBlob = new Blob([dataStr], { type: 'application/json' });
 						const url = URL.createObjectURL(dataBlob);
@@ -195,9 +267,20 @@
 	$(document).ready(function () {
 		V7AIChatbotAdmin.init();
 
-		// Handle form submission
-		$('form').on('submit', function () {
+		$('form').on('submit', function (e) {
 			$('.v7-ai-chatbot-loader').remove();
+
+			const form = this;
+			const invalidField = form.querySelector(':invalid');
+			if (invalidField) {
+				const tabContent = $(invalidField).closest('.v7-ai-chatbot-tab-content');
+				if (tabContent.length && !tabContent.is(':visible')) {
+					$('.v7-ai-chatbot-tab-content').hide();
+					$('.nav-tab').removeClass('nav-tab-active');
+					tabContent.show();
+					$('[href="#' + tabContent.attr('id') + '"]').addClass('nav-tab-active');
+				}
+			}
 		});
 	});
 })(jQuery);

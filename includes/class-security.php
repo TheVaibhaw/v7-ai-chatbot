@@ -4,23 +4,58 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class V7_AI_Chatbot_Security {
+	/**
+	 * Derives a 256-bit encryption key from the site's own WordPress salts.
+	 * Never a static/hardcoded key - it's unique per install.
+	 */
+	private function get_encryption_key() {
+		$salt = ( defined( 'AUTH_KEY' ) && AUTH_KEY ) ? AUTH_KEY : wp_salt( 'auth' );
+		return hash( 'sha256', $salt, true );
+	}
+
 	public function encrypt_value( $value ) {
-		if ( defined( 'ABSPATH' ) && function_exists( 'wp_encrypt_or_decrypt' ) ) {
-			return wp_encrypt_or_decrypt( 'encrypt', $value );
+		if ( '' === $value || null === $value ) {
+			return '';
 		}
-		return base64_encode( wp_json_encode( [ 'value' => $value, 'salt' => wp_salt() ] ) );
+
+		if ( ! function_exists( 'openssl_encrypt' ) ) {
+			// No OpenSSL available - refuse to store the secret in plain text.
+			return '';
+		}
+
+		$key = $this->get_encryption_key();
+		$iv  = random_bytes( openssl_cipher_iv_length( 'aes-256-cbc' ) );
+		$cipher_text = openssl_encrypt( $value, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv );
+
+		if ( false === $cipher_text ) {
+			return '';
+		}
+
+		return base64_encode( $iv . $cipher_text );
 	}
 
 	public function decrypt_value( $value ) {
-		if ( defined( 'ABSPATH' ) && function_exists( 'wp_encrypt_or_decrypt' ) ) {
-			return wp_encrypt_or_decrypt( 'decrypt', $value );
-		}
-		try {
-			$decoded = json_decode( base64_decode( $value ), true );
-			return $decoded['value'] ?? '';
-		} catch ( Exception $e ) {
+		if ( empty( $value ) || ! function_exists( 'openssl_decrypt' ) ) {
 			return '';
 		}
+
+		$raw = base64_decode( $value, true );
+		if ( false === $raw ) {
+			return '';
+		}
+
+		$iv_length = openssl_cipher_iv_length( 'aes-256-cbc' );
+		if ( strlen( $raw ) <= $iv_length ) {
+			return '';
+		}
+
+		$iv          = substr( $raw, 0, $iv_length );
+		$cipher_text = substr( $raw, $iv_length );
+		$key         = $this->get_encryption_key();
+
+		$plain_text = openssl_decrypt( $cipher_text, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv );
+
+		return false === $plain_text ? '' : $plain_text;
 	}
 
 	public function check_rate_limit( $ip, $max_requests, $time_window ) {

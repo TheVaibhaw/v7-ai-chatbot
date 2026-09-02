@@ -310,33 +310,33 @@ class V7_AI_Chatbot_Provider_Models {
 			],
 			'groq' => [
 				[
-					'id'          => 'mixtral-8x7b-32768',
-					'name'        => 'Mixtral 8x7B',
-					'description' => 'Ultra-fast open-source model',
-					'context'     => '32K tokens',
-					'max_output'  => '4K tokens',
+					'id'          => 'llama-3.3-70b-versatile',
+					'name'        => 'Llama 3.3 70B Versatile',
+					'description' => 'Ultra-fast LPU inference - large, capable open model',
+					'context'     => '128K tokens',
+					'max_output'  => '32K tokens',
 					'pricing'     => 'Free tier available',
 					'features'    => [ 'fast', 'open-source', 'free-tier' ],
 					'recommended' => true,
 					'status'      => 'stable',
 				],
 				[
-					'id'          => 'llama2-70b-4096',
-					'name'        => 'Llama 2 70B',
-					'description' => 'Powerful open-source model',
-					'context'     => '4K tokens',
-					'max_output'  => '2K tokens',
+					'id'          => 'llama-3.1-8b-instant',
+					'name'        => 'Llama 3.1 8B Instant',
+					'description' => 'Ultra-fast, lightweight open model',
+					'context'     => '128K tokens',
+					'max_output'  => '8K tokens',
 					'pricing'     => 'Free tier available',
 					'features'    => [ 'fast', 'open-source', 'free-tier' ],
 					'recommended' => false,
 					'status'      => 'stable',
 				],
 				[
-					'id'          => 'gemma-7b-it',
-					'name'        => 'Gemma 7B Instruct',
-					'description' => 'Google lightweight model',
+					'id'          => 'gemma2-9b-it',
+					'name'        => 'Gemma 2 9B IT',
+					'description' => 'Google lightweight instruction-tuned model',
 					'context'     => '8K tokens',
-					'max_output'  => '4K tokens',
+					'max_output'  => '8K tokens',
 					'pricing'     => 'Free tier available',
 					'features'    => [ 'fast', 'lightweight', 'free-tier' ],
 					'recommended' => false,
@@ -345,26 +345,37 @@ class V7_AI_Chatbot_Provider_Models {
 			],
 			'xai' => [
 				[
-					'id'          => 'grok-2',
-					'name'        => 'Grok-2',
-					'description' => 'Real-time information access',
+					'id'          => 'grok-3',
+					'name'        => 'Grok 3',
+					'description' => 'Real-time information access with advanced reasoning',
 					'context'     => '128K tokens',
 					'max_output'  => '4K tokens',
-					'pricing'     => '$2/$10 per 1M tokens',
+					'pricing'     => 'Variable based on model',
 					'features'    => [ 'real-time', 'reasoning', 'extended-context' ],
 					'recommended' => true,
 					'status'      => 'stable',
 				],
 				[
-					'id'          => 'grok-vision-beta',
-					'name'        => 'Grok Vision Beta',
-					'description' => 'Grok with vision capabilities',
+					'id'          => 'grok-3-mini',
+					'name'        => 'Grok 3 Mini',
+					'description' => 'Faster, lighter-weight Grok model',
 					'context'     => '128K tokens',
 					'max_output'  => '4K tokens',
-					'pricing'     => '$2/$10 per 1M tokens',
-					'features'    => [ 'vision', 'real-time', 'extended-context' ],
+					'pricing'     => 'Variable based on model',
+					'features'    => [ 'real-time', 'fast' ],
 					'recommended' => false,
-					'status'      => 'beta',
+					'status'      => 'stable',
+				],
+				[
+					'id'          => 'grok-2-1212',
+					'name'        => 'Grok 2 (1212)',
+					'description' => 'Previous-generation Grok model',
+					'context'     => '128K tokens',
+					'max_output'  => '4K tokens',
+					'pricing'     => 'Variable based on model',
+					'features'    => [ 'real-time', 'reasoning', 'extended-context' ],
+					'recommended' => false,
+					'status'      => 'stable',
 				],
 			],
 			'meta' => [
@@ -561,53 +572,79 @@ class V7_AI_Chatbot_Provider_Models {
 		return isset( $auth[ $provider ] ) ? $auth[ $provider ] : [];
 	}
 
-	/**
-	 * Validate API key format for a provider
-	 */
 	public static function validate_api_key( $provider, $api_key ) {
 		if ( empty( $api_key ) ) {
-			return new WP_Error( 'empty_key', 'API key cannot be empty' );
+			return new WP_Error( 'empty_key', esc_html__( 'API key cannot be empty.', V7_AI_CHATBOT_TEXTDOMAIN ) );
 		}
 
-		switch ( $provider ) {
-			case 'anthropic':
-				if ( ! preg_match( '/^sk-ant-[a-zA-Z0-9\-_]{20,}$/', $api_key ) ) {
-					return new WP_Error( 'invalid_key', 'Invalid Anthropic API key format. Should start with sk-ant-' );
-				}
-				break;
-
-			case 'openai':
-				if ( ! preg_match( '/^sk-[a-zA-Z0-9\-_]{20,}$/', $api_key ) ) {
-					return new WP_Error( 'invalid_key', 'Invalid OpenAI API key format. Should start with sk-' );
-				}
-				break;
-
-			case 'groq':
-				if ( ! preg_match( '/^gsk_[a-zA-Z0-9]{20,}$/', $api_key ) ) {
-					return new WP_Error( 'invalid_key', 'Invalid Groq API key format. Should start with gsk_' );
-				}
-				break;
-
-			case 'google':
-				if ( strlen( $api_key ) < 20 ) {
-					return new WP_Error( 'invalid_key', 'Invalid Google API key format' );
-				}
-				break;
-
-			case 'mistral':
-				if ( ! preg_match( '/^[a-zA-Z0-9\-_]{20,}$/', $api_key ) ) {
-					return new WP_Error( 'invalid_key', 'Invalid Mistral API key format' );
-				}
-				break;
-
-			case 'cohere':
-				if ( strlen( $api_key ) < 20 ) {
-					return new WP_Error( 'invalid_key', 'Invalid Cohere API key format' );
-				}
-				break;
+		if ( preg_match( '/\s/', $api_key ) ) {
+			return new WP_Error( 'invalid_key', esc_html__( 'That value contains spaces, so it is not a valid API key. Please paste the key exactly as shown in your provider dashboard.', V7_AI_CHATBOT_TEXTDOMAIN ) );
 		}
 
-		return true;
+		if ( strlen( $api_key ) < 16 ) {
+			return new WP_Error( 'invalid_key', esc_html__( 'That value is too short to be a valid API key. Please paste the full key from your provider dashboard.', V7_AI_CHATBOT_TEXTDOMAIN ) );
+		}
+
+		$expected_prefixes = [
+			'anthropic' => [ 'prefix' => 'sk-ant-', 'label' => 'Anthropic Claude', 'console' => 'console.anthropic.com' ],
+			'openai'    => [ 'prefix' => 'sk-',     'label' => 'OpenAI',           'console' => 'platform.openai.com' ],
+			'groq'      => [ 'prefix' => 'gsk_',    'label' => 'Groq',             'console' => 'console.groq.com' ],
+			'xai'       => [ 'prefix' => 'xai-',    'label' => 'xAI Grok',         'console' => 'console.x.ai' ],
+		];
+
+		// Work out which provider this key actually belongs to, checking the
+		// most specific prefix first so 'sk-ant-' wins over 'sk-'.
+		$by_specificity = $expected_prefixes;
+		uasort(
+			$by_specificity,
+			static function ( $a, $b ) {
+				return strlen( $b['prefix'] ) <=> strlen( $a['prefix'] );
+			}
+		);
+
+		$detected_provider = null;
+		foreach ( $by_specificity as $candidate => $candidate_data ) {
+			if ( 0 === strpos( $api_key, $candidate_data['prefix'] ) ) {
+				$detected_provider = $candidate;
+				break;
+			}
+		}
+
+		if ( ! isset( $expected_prefixes[ $provider ] ) || $detected_provider === $provider ) {
+			return true;
+		}
+
+		$expected = $expected_prefixes[ $provider ];
+
+		// The key clearly belongs to another supported provider - naming it
+		// is far more useful than just reporting a bad prefix.
+		if ( null !== $detected_provider ) {
+			$detected = $expected_prefixes[ $detected_provider ];
+
+			return new WP_Error(
+				'wrong_provider_key',
+				sprintf(
+					/* translators: 1: detected provider name, 2: detected key prefix, 3: selected provider name, 4: selected provider's console URL, 5: selected provider's key prefix */
+					esc_html__( 'This looks like a %1$s API key (it starts with "%2$s"), but the selected provider is %3$s. These are different services - either switch the "AI Provider" dropdown to %1$s, or paste a %3$s key from %4$s (those start with "%5$s").', V7_AI_CHATBOT_TEXTDOMAIN ),
+					$detected['label'],
+					$detected['prefix'],
+					$expected['label'],
+					$expected['console'],
+					$expected['prefix']
+				)
+			);
+		}
+
+		return new WP_Error(
+			'invalid_key',
+			sprintf(
+				/* translators: 1: provider name, 2: expected key prefix, 3: provider console URL */
+				esc_html__( 'That does not look like a %1$s API key - they start with "%2$s". Get yours from %3$s, and make sure your browser did not auto-fill a saved password into this field.', V7_AI_CHATBOT_TEXTDOMAIN ),
+				$expected['label'],
+				$expected['prefix'],
+				$expected['console']
+			)
+		);
 	}
 
 	/**

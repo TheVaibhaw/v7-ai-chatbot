@@ -225,25 +225,67 @@ const V7AIProviderModels = {
 				recommended: false
 			}
 		],
+		'groq': [
+			{
+				id: 'llama-3.3-70b-versatile',
+				name: 'Llama 3.3 70B Versatile',
+				description: 'Ultra-fast LPU inference - large, capable open model',
+				context: '128K tokens',
+				maxOutput: '32K tokens',
+				pricing: 'Free tier + paid plans',
+				features: ['fast', 'open-source', 'free-tier'],
+				recommended: true
+			},
+			{
+				id: 'llama-3.1-8b-instant',
+				name: 'Llama 3.1 8B Instant',
+				description: 'Ultra-fast, lightweight open model',
+				context: '128K tokens',
+				maxOutput: '8K tokens',
+				pricing: 'Free tier + paid plans',
+				features: ['fast', 'open-source', 'free-tier'],
+				recommended: false
+			},
+			{
+				id: 'gemma2-9b-it',
+				name: 'Gemma 2 9B IT',
+				description: 'Google lightweight instruction-tuned model',
+				context: '8K tokens',
+				maxOutput: '8K tokens',
+				pricing: 'Free tier + paid plans',
+				features: ['fast', 'lightweight', 'free-tier'],
+				recommended: false
+			}
+		],
 		'xai': [
 			{
-				id: 'grok-2',
-				name: 'Grok-2',
+				id: 'grok-3',
+				name: 'Grok 3',
 				description: 'Real-time information access with advanced reasoning',
 				context: '128K tokens',
 				maxOutput: '4K tokens',
-				pricing: '$2/$10 per 1M tokens',
+				pricing: 'Variable based on model',
 				features: ['real-time', 'reasoning', 'extended-context'],
 				recommended: true
 			},
 			{
-				id: 'grok-vision-beta',
-				name: 'Grok Vision Beta',
-				description: 'Grok with vision capabilities',
+				id: 'grok-3-mini',
+				name: 'Grok 3 Mini',
+				description: 'Faster, lighter-weight Grok model',
 				context: '128K tokens',
 				maxOutput: '4K tokens',
-				pricing: '$2/$10 per 1M tokens',
-				features: ['vision', 'real-time', 'extended-context'],
+				pricing: 'Variable based on model',
+				features: ['real-time', 'fast'],
+				recommended: false
+			},
+			{
+				id: 'grok-2-1212',
+				name: 'Grok 2 (1212)',
+				description: 'Previous-generation Grok model',
+				context: '128K tokens',
+				maxOutput: '4K tokens',
+				pricing: 'Variable based on model',
+				features: ['real-time', 'reasoning', 'extended-context'],
 				recommended: false
 			}
 		],
@@ -371,13 +413,14 @@ const V7AIProviderModels = {
 	init: function() {
 		const providerSelect = document.getElementById('v7-ai-provider');
 		if (providerSelect) {
+			// Switching provider intentionally picks that provider's default.
 			providerSelect.addEventListener('change', (e) => {
-				this.updateModels(e.target.value);
+				this.updateModels(e.target.value, false);
 				this.updateAPIKeyFields(e.target.value);
 			});
-			// Trigger on page load if provider is already selected
+			// On page load, keep the model that is actually saved.
 			if (providerSelect.value) {
-				this.updateModels(providerSelect.value);
+				this.updateModels(providerSelect.value, true);
 				this.updateAPIKeyFields(providerSelect.value);
 			}
 		}
@@ -412,17 +455,21 @@ const V7AIProviderModels = {
 		}
 	},
 
-	// Update model dropdown based on selected provider
-	updateModels: function(provider) {
+	// Update model dropdown based on selected provider.
+	//
+	// `preserveSelection` keeps the model that is already saved in the DB.
+	// Without it, merely opening the settings page would reset the dropdown
+	// to whatever this bundled list calls "recommended", and the next Save
+	// would overwrite the admin's real choice with a possibly-retired ID.
+	updateModels: function(provider, preserveSelection) {
 		const modelSelect = document.getElementById('v7-ai-model');
 		if (!modelSelect) return;
 
-		modelSelect.innerHTML = '<option value="">Loading models...</option>';
-
+		const previous = modelSelect.value;
 		const models = this.models[provider] || [];
 
 		if (models.length === 0) {
-			modelSelect.innerHTML = '<option value="">No models available</option>';
+			modelSelect.innerHTML = '<option value="">No models available - use "Load models from my account"</option>';
 			return;
 		}
 
@@ -437,15 +484,23 @@ const V7AIProviderModels = {
 			modelSelect.appendChild(option);
 		});
 
-		// Update model details on change
-		modelSelect.addEventListener('change', (e) => this.showModelDetails(provider, e.target.value));
-
-		// Show details for first/recommended model
-		const firstModel = models.find(m => m.recommended) || models[0];
-		if (firstModel) {
-			modelSelect.value = firstModel.id;
-			this.showModelDetails(provider, firstModel.id);
+		// Keep the saved model selectable even if this bundled list no longer
+		// contains it, so it is never silently replaced.
+		if (preserveSelection && previous && !models.some(m => m.id === previous)) {
+			const kept = document.createElement('option');
+			kept.value = previous;
+			kept.textContent = previous + ' (currently saved)';
+			modelSelect.insertBefore(kept, modelSelect.firstChild);
 		}
+
+		if (!this._modelChangeBound) {
+			modelSelect.addEventListener('change', (e) => this.showModelDetails(provider, e.target.value));
+			this._modelChangeBound = true;
+		}
+
+		const target = (preserveSelection && previous) ? previous : ((models.find(m => m.recommended) || models[0]).id);
+		modelSelect.value = target;
+		this.showModelDetails(provider, target);
 	},
 
 	// Show detailed information about selected model
